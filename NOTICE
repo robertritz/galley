@@ -1,0 +1,17 @@
+Galley includes third-party software and fonts:
+
+Readability.js 0.6.0 — Mozilla
+  GalleyCore/Sources/GalleyCore/Resources/js/readability.js
+  Apache License 2.0 — https://github.com/mozilla/readability
+
+Paged.js 0.4.3 — Coko Foundation
+  GalleyCore/Sources/GalleyCore/Resources/js/paged.polyfill.js
+  MIT License — https://pagedjs.org
+
+Source Serif 4 — Adobe (via Fontsource)
+  GalleyCore/Sources/GalleyCore/Resources/themes/classic/fonts/source-serif-4-*
+  SIL Open Font License 1.1 — see fonts/OFL-SourceSerif4.txt
+
+Inter — Rasmus Andersson (via Fontsource)
+  GalleyCore/Sources/GalleyCore/Resources/themes/classic/fonts/inter-*
+  SIL Open Font License 1.1 — see fonts/OFL-Inter.txt

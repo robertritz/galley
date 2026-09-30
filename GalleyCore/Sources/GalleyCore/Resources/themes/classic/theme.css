@@ -1,0 +1,515 @@
+/* Galley — Classic theme
+   Single column, generous margins, Source Serif 4 for text and Inter for labels.
+   Designed for one-sided A4 or US Letter printing on a home printer: nothing
+   comes closer than 12 mm to the paper edge. */
+
+:root {
+  --ink: #111;
+  --muted: #666;
+  --rule: #bbb;
+  --accent: #b3261e;
+  --serif: "Galley Serif", "Source Serif 4", Georgia, serif;
+  --sans: "Galley Sans", Inter, "Helvetica Neue", sans-serif;
+  --gutter: 22mm;         /* extra inset for body text, so lines stay readable */
+}
+
+/* ---------- Pages ---------- */
+
+@page {
+  margin: 20mm 20mm 22mm 20mm;
+
+  @top-left {
+    font-family: var(--sans);
+    font-size: 6.8pt;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    vertical-align: bottom;
+    padding-bottom: 5mm;
+  }
+  @top-right {
+    content: string(story-title);
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 8pt;
+    color: var(--muted);
+    vertical-align: bottom;
+    padding-bottom: 5mm;
+    text-align: right;
+  }
+  @bottom-right {
+    content: counter(page);
+    font-family: var(--sans);
+    font-size: 8.5pt;
+    font-weight: 600;
+    vertical-align: top;
+    padding-top: 6mm;
+  }
+}
+
+@page cover {
+  margin: 14mm;
+  @top-left { content: none; }
+  @top-right { content: none; }
+  @bottom-right { content: none; }
+}
+
+html {
+  font-family: var(--serif);
+  font-size: 10.4pt;
+  line-height: 1.45;
+  color: var(--ink);
+  font-optical-sizing: auto;
+  font-kerning: normal;
+  font-variant-ligatures: common-ligatures;
+  -webkit-font-smoothing: antialiased;
+}
+
+body { margin: 0; }
+
+/* ---------- Cover ---------- */
+
+.cover {
+  page: cover;
+  display: flex;
+  flex-direction: column;
+  height: calc(var(--paper-height) - 28mm - 1px);
+  overflow: hidden;
+}
+
+.cover-masthead {
+  border-bottom: 2.2pt solid var(--ink);
+  padding-bottom: 3mm;
+  flex: 0 0 auto;
+  margin-bottom: 6mm;
+}
+
+.masthead {
+  font-family: var(--serif);
+  font-size: 84pt;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1;
+  margin: 0 0 1mm -1mm;
+  font-variation-settings: "opsz" 60;
+}
+
+.issue-line {
+  display: flex;
+  justify-content: space-between;
+  margin: 0;
+  font-family: var(--sans);
+  font-size: 8pt;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border-top: 0.6pt solid var(--ink);
+  padding-top: 2mm;
+}
+
+.cover-image {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+  position: relative;
+  background: #eee;
+}
+.cover-image img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.cover-image-empty {
+  background: repeating-linear-gradient(135deg, #f1f1f1 0 6mm, #e9e9e9 6mm 12mm);
+}
+
+.cover-text {
+  flex: 0 0 auto;
+  display: grid;
+  grid-template-columns: 1.25fr 1fr;
+  gap: 8mm;
+  padding-top: 6mm;
+}
+
+.cover-text a { color: inherit; text-decoration: none; }
+
+.cover-kicker, .cover-line-site {
+  display: block;
+  font-family: var(--sans);
+  font-size: 7pt;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.cover-title {
+  display: block;
+  font-size: 22pt;
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: -0.01em;
+  margin-top: 1.5mm;
+}
+
+.cover-lead::after {
+  content: "Page " target-counter(attr(href), page);
+  display: block;
+  margin-top: 2mm;
+  font-family: var(--sans);
+  font-size: 7.5pt;
+  color: var(--muted);
+}
+
+.cover-lines {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-left: 0.6pt solid var(--rule);
+  padding-left: 5mm;
+}
+.cover-lines li { margin-bottom: 3.5mm; }
+.cover-line-title {
+  display: block;
+  font-size: 10.5pt;
+  font-weight: 600;
+  line-height: 1.2;
+}
+.cover-line-site { color: var(--muted); margin-top: 0.8mm; font-size: 6.5pt; }
+.cover-lines a::after {
+  content: "p. " target-counter(attr(href), page);
+  font-family: var(--sans);
+  font-size: 6.5pt;
+  color: var(--muted);
+}
+
+/* ---------- Contents ---------- */
+
+.contents {
+  break-before: page;
+}
+
+.contents-heading {
+  font-family: var(--sans);
+  font-size: 9pt;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin: 0 0 8mm;
+  padding-bottom: 2mm;
+  border-bottom: 1.2pt solid var(--ink);
+}
+
+.toc {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.toc li {
+  display: grid;
+  grid-template-columns: 16mm 1fr;
+  gap: 4mm;
+  padding: 0 0 5mm;
+  margin-bottom: 5mm;
+  border-bottom: 0.5pt solid #ddd;
+  break-inside: avoid;
+}
+.toc-page {
+  color: inherit;
+  text-decoration: none;
+  font-family: var(--serif);
+  font-size: 22pt;
+  font-weight: 300;
+  line-height: 1;
+  text-align: right;
+}
+.toc-page::after { content: target-counter(attr(href), page); }
+.toc-entry p { margin: 0; }
+.toc-kicker {
+  font-family: var(--sans);
+  font-size: 6.8pt;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.toc-title {
+  font-size: 13.5pt;
+  font-weight: 650;
+  line-height: 1.15;
+  margin: 0.8mm 0 1mm !important;
+}
+.toc-dek { font-style: italic; color: #333; font-size: 9.5pt; line-height: 1.35; }
+.toc-byline {
+  font-family: var(--sans);
+  font-size: 7pt;
+  color: var(--muted);
+  margin-top: 1mm !important;
+}
+
+.colophon {
+  font-family: var(--sans);
+  font-size: 6.8pt;
+  color: var(--muted);
+  margin-top: 4mm;
+}
+
+/* ---------- Articles ---------- */
+
+.story {
+  break-before: page;
+}
+
+.opener {
+  margin-bottom: 7mm;
+  padding: 0 var(--gutter);
+}
+
+.kicker {
+  font-family: var(--sans);
+  font-size: 7.5pt;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 6mm 0 3mm;
+}
+
+.headline {
+  string-set: story-title content(text);
+  font-size: 27pt;
+  font-weight: 700;
+  line-height: 1.06;
+  letter-spacing: -0.015em;
+  margin: 0 0 4mm;
+  hyphens: manual;
+  font-variation-settings: "opsz" 48;
+}
+
+.dek {
+  font-size: 12.5pt;
+  font-style: italic;
+  line-height: 1.35;
+  color: #333;
+  margin: 0 0 4mm;
+}
+
+.byline {
+  font-family: var(--sans);
+  font-size: 7.5pt;
+  color: var(--muted);
+  padding-top: 2.5mm;
+  border-top: 0.6pt solid var(--rule);
+  margin: 0;
+}
+
+.opener .lead { margin: 6mm calc(-1 * var(--gutter)) 0; }
+.opener .lead img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 95mm;
+  object-fit: cover;
+}
+
+.body {
+  padding: 0 var(--gutter);
+  text-align: justify;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+  widows: 2;
+  orphans: 2;
+}
+
+.body p { margin: 0; }
+/* Paged.js marks an element that continues on the next page so its last line is
+   justified. On .body that would be inherited by every paragraph; reset it on
+   everything that isn't itself split. */
+.body p:not([data-align-last-split-element]),
+.body li:not([data-align-last-split-element]),
+.body blockquote:not([data-align-last-split-element]) { text-align-last: auto; }
+.body p + p { text-indent: 1.3em; }
+.body h2 + p,
+.body h3 + p,
+.body h4 + p,
+.body figure + p,
+.body blockquote + p,
+.body ul + p,
+.body ol + p,
+.body pre + p,
+.body table + p,
+.body aside + p,
+.body hr + p { text-indent: 0; }
+
+.body .first-paragraph::first-letter {
+  float: left;
+  font-size: 3.55em;
+  line-height: 0.82;
+  font-weight: 700;
+  padding: 0.06em 0.07em 0 0;
+  font-variation-settings: "opsz" 60;
+}
+
+.body .last-paragraph::after {
+  content: " \25A0";
+  font-size: 0.7em;
+  color: var(--accent);
+  vertical-align: 0.1em;
+}
+
+.body h2, .body h3, .body h4 {
+  font-family: var(--sans);
+  font-size: 9.5pt;
+  font-weight: 700;
+  line-height: 1.3;
+  margin: 5mm 0 1.5mm;
+  text-align: left;
+  hyphens: manual;
+  break-after: avoid;
+}
+.body h3, .body h4 { font-size: 8.8pt; }
+
+.body blockquote {
+  margin: 4mm 0 4mm 0;
+  padding-left: 4mm;
+  border-left: 1.5pt solid var(--accent);
+  font-style: italic;
+}
+.body blockquote p + p { text-indent: 0; margin-top: 2mm; }
+
+.body ul, .body ol { margin: 2.5mm 0; padding-left: 6mm; text-align: left; }
+.body li { margin-bottom: 1mm; }
+
+.body hr {
+  border: none;
+  text-align: center;
+  margin: 5mm 0;
+}
+.body hr::after { content: "* * *"; letter-spacing: 0.6em; color: var(--muted); }
+
+.body figure,
+.body > img,
+.body p > img:only-child {
+  margin: 5mm calc(-1 * var(--gutter));
+  break-inside: avoid;
+}
+.body figure { display: block; }
+.body img {
+  display: block;
+  max-width: 100%;
+  max-height: 115mm;
+  width: auto;
+  height: auto;
+  margin: 0 auto;
+}
+.body figure img { max-width: 100%; }
+.body figcaption {
+  font-family: var(--sans);
+  font-size: 7pt;
+  line-height: 1.35;
+  color: var(--muted);
+  margin-top: 1.5mm;
+  text-align: left;
+  hyphens: manual;
+}
+
+.body pre, .body code {
+  font-family: "SF Mono", Menlo, monospace;
+  font-size: 8pt;
+}
+.body pre {
+  white-space: pre-wrap;
+  text-align: left;
+  background: #f4f4f4;
+  padding: 2.5mm 3mm;
+  margin: 3mm 0;
+}
+
+.body table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--sans);
+  font-size: 7.5pt;
+  margin: 4mm 0;
+  text-align: left;
+}
+.body table img { max-height: 55mm; width: auto; }
+.body th, .body td { border-bottom: 0.5pt solid #ccc; padding: 1mm 1.5mm; vertical-align: top; }
+
+.body a { color: inherit; text-decoration: none; }
+
+sup.note-ref {
+  font-family: var(--sans);
+  font-size: 0.6em;
+  color: var(--accent);
+  margin-left: 0.08em;
+}
+
+.galley-embed {
+  display: block;
+  margin: 4mm 0;
+  padding: 3mm 4mm;
+  border: 0.6pt solid var(--rule);
+  font-family: var(--sans);
+  font-size: 7.5pt;
+  color: var(--muted);
+  text-align: left;
+}
+.galley-embed::before {
+  content: attr(data-kind) " — see the original online  ";
+  font-weight: 700;
+  color: var(--ink);
+}
+
+/* ---------- End of article ---------- */
+
+.source {
+  margin: 8mm var(--gutter) 0;
+  padding-top: 3mm;
+  border-top: 0.6pt solid var(--rule);
+  font-family: var(--sans);
+  font-size: 7pt;
+  color: var(--muted);
+  break-inside: avoid;
+}
+
+.notes-heading {
+  font-weight: 700;
+  color: var(--ink);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 6.5pt;
+  margin: 0 0 1mm;
+}
+.notes {
+  margin: 0 0 4mm;
+  padding-left: 5mm;
+  columns: 2;
+  column-gap: 6mm;
+  word-break: break-all;
+}
+.notes li { margin-bottom: 0.6mm; }
+
+.source-line {
+  display: flex;
+  align-items: center;
+  gap: 4mm;
+}
+.source-line p { margin: 0; }
+.source-url { color: var(--ink); word-break: break-all; }
+img.qr {
+  width: 17mm;
+  height: 17mm;
+  image-rendering: pixelated;
+}
+
+/* ---------- Image settings ---------- */
+
+.images-grayscale img:not(.qr) { filter: grayscale(1); }
+.images-none .body figure,
+.images-none .body img,
+.images-none .opener .lead { display: none !important; }

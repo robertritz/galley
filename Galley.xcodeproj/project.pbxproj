@@ -1,0 +1,423 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		03202F2632B59162FDFF4AEF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 71E383E7FE4CCED24FEEF008 /* Assets.xcassets */; };
+		05DF811E96A68994E4850B17 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC5BC5906CF1DC9E1821BDE4 /* SettingsView.swift */; };
+		2205C7EBF3B482D724701C77 /* EditionPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F219DAC1FDCFD0FFCEB1E00 /* EditionPreview.swift */; };
+		270B01F0303C7258233E2B6C /* EditionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE11FF36FF800E63330C657F /* EditionView.swift */; };
+		285CEEE2548AD5124090447A /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BB361E53F1F50E0E0875093 /* ContentView.swift */; };
+		2F1D7BB4AAF009EBBD2FC5F2 /* Library.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72CF3E256401E0CD41B89925 /* Library.swift */; };
+		4592C7E42081D3EBFD7713C5 /* SidebarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B605F9B3A6BDBEFAA7721520 /* SidebarView.swift */; };
+		965A03AA349410410FF0499C /* GalleyApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBBB059BE053A6FD4308C65C /* GalleyApp.swift */; };
+		971C2F10F1AD2D70F75DCE54 /* AddLinkSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE866825882E66037571895D /* AddLinkSheet.swift */; };
+		A89AFB384F919A2939D57422 /* BrowserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D838875122AEC7A4A744C01 /* BrowserView.swift */; };
+		D0557C12C0ACF442BF697DFB /* GalleyCore in Frameworks */ = {isa = PBXBuildFile; productRef = 6E759FDDA4FE50491D88350D /* GalleyCore */; };
+		E708C4903AD528B18709F803 /* Article.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B919FAEDD0466659E30D195 /* Article.swift */; };
+		EAC424B973E434905FA98626 /* Edition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05EEA1FB66D04352200CAFC8 /* Edition.swift */; };
+		FF6DEB18079C32CA8A542FA2 /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B953688FD4723DFB9AADEE1 /* Preferences.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		05EEA1FB66D04352200CAFC8 /* Edition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Edition.swift; sourceTree = "<group>"; };
+		147D5A604D5978895C17C42E /* Galley.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Galley.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		3BB361E53F1F50E0E0875093 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		5D838875122AEC7A4A744C01 /* BrowserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserView.swift; sourceTree = "<group>"; };
+		71E383E7FE4CCED24FEEF008 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		72CF3E256401E0CD41B89925 /* Library.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Library.swift; sourceTree = "<group>"; };
+		7F219DAC1FDCFD0FFCEB1E00 /* EditionPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditionPreview.swift; sourceTree = "<group>"; };
+		85DF6EC882D068E7CAD09D78 /* GalleyCore */ = {isa = PBXFileReference; lastKnownFileType = folder; name = GalleyCore; path = GalleyCore; sourceTree = SOURCE_ROOT; };
+		8B953688FD4723DFB9AADEE1 /* Preferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Preferences.swift; sourceTree = "<group>"; };
+		9B919FAEDD0466659E30D195 /* Article.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Article.swift; sourceTree = "<group>"; };
+		B605F9B3A6BDBEFAA7721520 /* SidebarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarView.swift; sourceTree = "<group>"; };
+		CE866825882E66037571895D /* AddLinkSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddLinkSheet.swift; sourceTree = "<group>"; };
+		DBBB059BE053A6FD4308C65C /* GalleyApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleyApp.swift; sourceTree = "<group>"; };
+		DC5BC5906CF1DC9E1821BDE4 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		EE11FF36FF800E63330C657F /* EditionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditionView.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		3EE2C30F5BAA19C9025E6EDA /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D0557C12C0ACF442BF697DFB /* GalleyCore in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		118B53B6FA50CA073A226E20 = {
+			isa = PBXGroup;
+			children = (
+				C4859B1C0A7FE357D258EA5A /* Galley */,
+				F6831A4B096AE4DAA5A6BC0A /* Packages */,
+				5AE09D2FD1B3646AED9A6FCF /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		5AE09D2FD1B3646AED9A6FCF /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				147D5A604D5978895C17C42E /* Galley.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		99071593C5FACE337EEE179A /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				9B919FAEDD0466659E30D195 /* Article.swift */,
+				05EEA1FB66D04352200CAFC8 /* Edition.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		AD3FCD28EA8BA012A580ADF3 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				CE866825882E66037571895D /* AddLinkSheet.swift */,
+				5D838875122AEC7A4A744C01 /* BrowserView.swift */,
+				3BB361E53F1F50E0E0875093 /* ContentView.swift */,
+				7F219DAC1FDCFD0FFCEB1E00 /* EditionPreview.swift */,
+				EE11FF36FF800E63330C657F /* EditionView.swift */,
+				DC5BC5906CF1DC9E1821BDE4 /* SettingsView.swift */,
+				B605F9B3A6BDBEFAA7721520 /* SidebarView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		C4859B1C0A7FE357D258EA5A /* Galley */ = {
+			isa = PBXGroup;
+			children = (
+				71E383E7FE4CCED24FEEF008 /* Assets.xcassets */,
+				DBBB059BE053A6FD4308C65C /* GalleyApp.swift */,
+				72CF3E256401E0CD41B89925 /* Library.swift */,
+				8B953688FD4723DFB9AADEE1 /* Preferences.swift */,
+				99071593C5FACE337EEE179A /* Model */,
+				AD3FCD28EA8BA012A580ADF3 /* Views */,
+			);
+			path = Galley;
+			sourceTree = "<group>";
+		};
+		F6831A4B096AE4DAA5A6BC0A /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				85DF6EC882D068E7CAD09D78 /* GalleyCore */,
+			);
+			name = Packages;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		C12FFAD813ABFA3515B2F32D /* Galley */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B517535259E4D2D675817A32 /* Build configuration list for PBXNativeTarget "Galley" */;
+			buildPhases = (
+				B97FBF40FF0EAE34F205D4AA /* Sources */,
+				587098016ABCF8952FE6DEBD /* Resources */,
+				3EE2C30F5BAA19C9025E6EDA /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Galley;
+			packageProductDependencies = (
+				6E759FDDA4FE50491D88350D /* GalleyCore */,
+			);
+			productName = Galley;
+			productReference = 147D5A604D5978895C17C42E /* Galley.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		C3D80CF56B1C83BA21A8C2F4 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					C12FFAD813ABFA3515B2F32D = {
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 9C8CF71A8E7486BA0E927D57 /* Build configuration list for PBXProject "Galley" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 118B53B6FA50CA073A226E20;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				AD01C1414E0B4BF34199937F /* XCLocalSwiftPackageReference "GalleyCore" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 5AE09D2FD1B3646AED9A6FCF /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				C12FFAD813ABFA3515B2F32D /* Galley */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		587098016ABCF8952FE6DEBD /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				03202F2632B59162FDFF4AEF /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		B97FBF40FF0EAE34F205D4AA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				971C2F10F1AD2D70F75DCE54 /* AddLinkSheet.swift in Sources */,
+				E708C4903AD528B18709F803 /* Article.swift in Sources */,
+				A89AFB384F919A2939D57422 /* BrowserView.swift in Sources */,
+				285CEEE2548AD5124090447A /* ContentView.swift in Sources */,
+				EAC424B973E434905FA98626 /* Edition.swift in Sources */,
+				2205C7EBF3B482D724701C77 /* EditionPreview.swift in Sources */,
+				270B01F0303C7258233E2B6C /* EditionView.swift in Sources */,
+				965A03AA349410410FF0499C /* GalleyApp.swift in Sources */,
+				2F1D7BB4AAF009EBBD2FC5F2 /* Library.swift in Sources */,
+				FF6DEB18079C32CA8A542FA2 /* Preferences.swift in Sources */,
+				05DF811E96A68994E4850B17 /* SettingsView.swift in Sources */,
+				4592C7E42081D3EBFD7713C5 /* SidebarView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		26D7C6F4E77BD75035A9F6A8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_HARDENED_RUNTIME = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Galley;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.news";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Galley is open source under the MIT licence.";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.robertritz.galley;
+				PRODUCT_NAME = Galley;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		2A15CAC50609E455F7F8D010 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_HARDENED_RUNTIME = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Galley;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.news";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Galley is open source under the MIT licence.";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.robertritz.galley;
+				PRODUCT_NAME = Galley;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		77D8FE75C9D09A0D577DBD57 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MARKETING_VERSION = 0.1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		95C753225D6C068D841D2E4A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MARKETING_VERSION = 0.1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		9C8CF71A8E7486BA0E927D57 /* Build configuration list for PBXProject "Galley" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				77D8FE75C9D09A0D577DBD57 /* Debug */,
+				95C753225D6C068D841D2E4A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		B517535259E4D2D675817A32 /* Build configuration list for PBXNativeTarget "Galley" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2A15CAC50609E455F7F8D010 /* Debug */,
+				26D7C6F4E77BD75035A9F6A8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		AD01C1414E0B4BF34199937F /* XCLocalSwiftPackageReference "GalleyCore" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = GalleyCore;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		6E759FDDA4FE50491D88350D /* GalleyCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = GalleyCore;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = C3D80CF56B1C83BA21A8C2F4 /* Project object */;
+}
