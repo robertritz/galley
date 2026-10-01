@@ -162,17 +162,20 @@
     transition: transform .35s ease;
   }
   .page img { border-radius: 2px; }
-  .page:hover { z-index: 5; }
-  .p1 { left: 2%;  top: 9%;  transform: rotate(-7deg); }
-  .p2 { left: 20%; top: 2%;  transform: rotate(-2deg); z-index: 2; }
-  .p3 { left: 38%; top: 0;   transform: rotate(1.5deg); z-index: 3; }
-  .p4 { left: 56%; top: 4%;  transform: rotate(4deg); z-index: 2; }
-  .p5 { right: 2%; top: 12%; transform: rotate(8deg); }
-  .p1:hover { transform: rotate(-7deg) translateY(-10px); }
-  .p2:hover { transform: rotate(-2deg) translateY(-10px); }
-  .p3:hover { transform: rotate(1.5deg) translateY(-10px); }
-  .p4:hover { transform: rotate(4deg) translateY(-10px); }
-  .p5:hover { transform: rotate(8deg) translateY(-10px); }
+  .page:hover { z-index: 6; }
+  /* One edition dealt out across a table, left to right: each page lands on
+     the one before, so every page shows its left side (masthead, contents
+     list, headline) and the reading order is obvious. */
+  .p1 { left: 1%;  top: 6%; transform: rotate(-6deg); z-index: 1; }
+  .p2 { left: 19%; top: 3%; transform: rotate(-3deg); z-index: 2; }
+  .p3 { left: 37%; top: 1%; transform: rotate(0deg);  z-index: 3; }
+  .p4 { left: 55%; top: 3%; transform: rotate(3deg);  z-index: 4; }
+  .p5 { right: 1%; top: 6%; transform: rotate(6deg);  z-index: 5; }
+  .p1:hover { transform: rotate(-6deg) translateY(-10px); }
+  .p2:hover { transform: rotate(-3deg) translateY(-10px); }
+  .p3:hover { transform: rotate(0deg) translateY(-10px); }
+  .p4:hover { transform: rotate(3deg) translateY(-10px); }
+  .p5:hover { transform: rotate(6deg) translateY(-10px); }
   @media (max-width: 720px) {
     .spread { height: auto; display: flex; gap: 14px; overflow-x: auto; padding: 8px 24px 28px; scroll-snap-type: x mandatory; }
     .page { position: static; flex: 0 0 72%; transform: none !important; scroll-snap-align: center; }
@@ -302,12 +305,12 @@
         <p>Real typesetting, not a web page sent to the printer.</p>
       </div>
     </div>
-    <div class="spread">
-      <div class="page p1"><img src="{{ASSETS}}/page-cover-sky.webp" alt="The cover of an edition called Beyond the Sky" width="1100" height="1424" loading="lazy"></div>
-      <div class="page p2"><img src="{{ASSETS}}/page-contents.webp" alt="A contents page with page numbers" width="1100" height="1424" loading="lazy"></div>
-      <div class="page p3"><img src="{{ASSETS}}/page-cover.webp" alt="The cover of an edition called Print &amp; Type" width="1100" height="1424" loading="lazy"></div>
-      <div class="page p4"><img src="{{ASSETS}}/page-opener.webp" alt="The opening page of an article in two columns" width="1100" height="1424" loading="lazy"></div>
-      <div class="page p5"><img src="{{ASSETS}}/page-spread.webp" alt="A two-column page with photographs and captions" width="1100" height="1424" loading="lazy"></div>
+    <div class="spread" aria-label="Pages from one edition, in order: cover, contents, and the first pages of the lead story">
+      <div class="page p1"><img src="{{ASSETS}}/page-cover.webp" alt="Page 1: the cover of edition No. 12, “Print &amp; Type”" width="1100" height="1424" loading="lazy"></div>
+      <div class="page p2"><img src="{{ASSETS}}/page-contents.webp" alt="Page 2: the contents page, listing four stories with their page numbers" width="1100" height="1424" loading="lazy"></div>
+      <div class="page p3"><img src="{{ASSETS}}/page-opener.webp" alt="Page 3: the opening page of the lead story, Letterpress printing" width="1100" height="1424" loading="lazy"></div>
+      <div class="page p4"><img src="{{ASSETS}}/page-spread.webp" alt="Page 4: the story continues in two columns with photographs" width="1100" height="1424" loading="lazy"></div>
+      <div class="page p5"><img src="{{ASSETS}}/page-continued.webp" alt="Page 5: the story continues with a photograph of a hand press" width="1100" height="1424" loading="lazy"></div>
     </div>
     <div class="wrap">
       <div class="caption-row">
