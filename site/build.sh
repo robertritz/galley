@@ -6,7 +6,10 @@
 #   ASSETS=img site/build.sh # local preview with relative images
 set -euo pipefail
 cd "$(dirname "$0")"
-ASSETS="${ASSETS:-https://cdn.jsdelivr.net/gh/robertritz/galley@main/site/img}"
+# Pin images to the last commit that changed them: a new image gets a new URL, so
+# browsers never show a stale copy (jsDelivr lets them cache files for a week).
+IMG_COMMIT=$(git log -1 --format=%H -- img)
+ASSETS="${ASSETS:-https://cdn.jsdelivr.net/gh/robertritz/galley@$IMG_COMMIT/site/img}"
 mkdir -p build
 sed "s#{{ASSETS}}#$ASSETS#g" index.html > build/index.html
 echo "site/build/index.html (assets: $ASSETS)"
