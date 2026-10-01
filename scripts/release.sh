@@ -43,6 +43,15 @@ xcodebuild -exportArchive \
 APP="$WORK/export/Galley.app"
 codesign --verify --deep --strict "$APP"
 
+# Notarise and staple the app itself, so it opens without a network check even
+# after it's been copied out of the DMG.
+if [[ "${SKIP_NOTARIZE:-}" != "1" ]]; then
+  echo "==> Notarising the app"
+  ditto -c -k --keepParent "$APP" "$WORK/Galley.zip"
+  xcrun notarytool submit "$WORK/Galley.zip" --keychain-profile "$PROFILE" --wait
+  xcrun stapler staple "$APP"
+fi
+
 echo "==> Making the disk image"
 STAGE="$WORK/dmg"
 mkdir -p "$STAGE" && cp -R "$APP" "$STAGE/" && ln -s /Applications "$STAGE/Applications"
@@ -51,10 +60,11 @@ hdiutil create -volname "Galley $VERSION" -srcfolder "$STAGE" -fs HFS+ -format U
 codesign --sign "$IDENTITY" --timestamp "$DMG"
 
 if [[ "${SKIP_NOTARIZE:-}" != "1" ]]; then
-  echo "==> Notarising (this takes a few minutes)"
+  echo "==> Notarising the disk image"
   xcrun notarytool submit "$DMG" --keychain-profile "$PROFILE" --wait
   xcrun stapler staple "$DMG"
   spctl --assess --type open --context context:primary-signature --verbose "$DMG"
+  spctl --assess --type execute --verbose "$APP"
 fi
 
 cp "$DMG" dist/
