@@ -19,15 +19,16 @@ does the whole thing; it needs two things set up once.
 
 ## Each release
 
-1. Bump `MARKETING_VERSION` (and `CURRENT_PROJECT_VERSION`) in `project.yml`.
-2. Run `scripts/release.sh`. It generates the project, archives, exports with your
-   Developer ID, builds the DMG, notarises it and staples the ticket. The result is
-   in `dist/`.
-3. Make a GitHub release and attach the DMG:
+One command does everything: bumps the version in `project.yml`, builds, signs,
+notarises and staples the DMG, commits, tags, and publishes the GitHub release.
 
-   ```bash
-   gh release create v0.2.0 dist/Galley-0.2.0.dmg --title "Galley 0.2.0" --notes "…"
-   ```
+```bash
+scripts/publish.sh 0.3.0 "What changed in this release"
+```
+
+To do it by hand instead: bump `MARKETING_VERSION` and `CURRENT_PROJECT_VERSION` in
+`project.yml`, run `scripts/release.sh` (the DMG lands in `dist/`), then
+`gh release create v0.3.0 dist/Galley-0.3.0.dmg`.
 
 `SKIP_NOTARIZE=1 scripts/release.sh` makes a signed DMG without notarising, which is
 handy for checking the build quickly. Other Macs will warn about it.
