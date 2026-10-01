@@ -1,0 +1,422 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Galley — Your reading list, printed as a magazine</title>
+<meta name="description" content="Galley is a free, open-source Mac app that turns the links you save into beautifully typeset magazine editions, ready for the printer on your desk.">
+<meta property="og:title" content="Galley — Your reading list, printed as a magazine">
+<meta property="og:description" content="A free, open-source Mac app that turns saved links into printable magazine editions.">
+<meta property="og:image" content="{{ASSETS}}/og.png">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/png" href="{{ASSETS}}/favicon.png">
+<link rel="apple-touch-icon" href="{{ASSETS}}/icon-512.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;0,8..60,800;1,8..60,400;1,8..60,500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #f7f4ee;
+    --paper-2: #efeae0;
+    --card: #fffdf9;
+    --ink: #1b1a17;
+    --ink-2: #3a3833;
+    --muted: #6f6a60;
+    --rule: #e3ddd1;
+    --accent: #b3261e;
+    --accent-ink: #fff;
+    --shadow: 0 1px 2px rgba(40, 30, 10, .06), 0 10px 30px -12px rgba(40, 30, 10, .22);
+    --serif: "Source Serif 4", "New York", Georgia, serif;
+    --sans: Inter, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
+    --max: 1120px;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #151412;
+      --paper-2: #1d1b18;
+      --card: #201e1b;
+      --ink: #f3efe7;
+      --ink-2: #d9d4ca;
+      --muted: #a39d92;
+      --rule: #2e2b26;
+      --accent: #e25a4e;
+      --shadow: 0 1px 2px rgba(0,0,0,.4), 0 14px 40px -14px rgba(0,0,0,.7);
+      color-scheme: dark;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font: 17px/1.6 var(--sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  img { display: block; max-width: 100%; height: auto; }
+  a { color: inherit; }
+  .wrap { max-width: var(--max); margin: 0 auto; padding: 0 24px; }
+
+  /* ---------- Navigation ---------- */
+  .nav {
+    position: sticky; top: 0; z-index: 10;
+    backdrop-filter: saturate(180%) blur(18px);
+    -webkit-backdrop-filter: saturate(180%) blur(18px);
+    background: color-mix(in srgb, var(--paper) 78%, transparent);
+    border-bottom: 1px solid color-mix(in srgb, var(--rule) 70%, transparent);
+  }
+  .nav .wrap { display: flex; align-items: center; gap: 28px; height: 60px; }
+  .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; font: 700 19px/1 var(--serif); letter-spacing: -.01em; }
+  .brand img { width: 30px; height: 30px; }
+  .nav-links { display: flex; gap: 24px; margin-left: auto; font-size: 14.5px; }
+  .nav-links a { text-decoration: none; color: var(--ink-2); }
+  .nav-links a:hover { color: var(--ink); }
+  .nav .btn { padding: 7px 14px; font-size: 14px; }
+  @media (max-width: 720px) { .nav-links { display: none; } .nav .btn { margin-left: auto; } }
+
+  /* ---------- Buttons ---------- */
+  .btn {
+    display: inline-flex; align-items: center; gap: 9px;
+    padding: 13px 22px; border-radius: 999px;
+    font: 600 15.5px/1 var(--sans); text-decoration: none;
+    transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
+  }
+  .btn-primary { background: var(--ink); color: var(--paper); box-shadow: 0 6px 20px -8px rgba(0,0,0,.45); }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 10px 26px -10px rgba(0,0,0,.5); }
+  .btn-ghost { color: var(--ink); border: 1px solid var(--rule); background: var(--card); }
+  .btn-ghost:hover { border-color: var(--muted); }
+  .btn svg { width: 17px; height: 17px; flex: none; }
+
+  /* ---------- Hero ---------- */
+  .hero { text-align: center; padding: 76px 0 36px; }
+  .hero .icon { width: 116px; height: 116px; margin: 0 auto 26px; filter: drop-shadow(0 14px 22px rgba(30, 20, 0, .22)); }
+  .eyebrow {
+    display: inline-flex; gap: 8px; align-items: center;
+    font: 600 12.5px/1 var(--sans); letter-spacing: .08em; text-transform: uppercase; color: var(--accent);
+    margin-bottom: 18px;
+  }
+  .eyebrow .dot { width: 4px; height: 4px; border-radius: 50%; background: currentColor; opacity: .5; }
+  h1 {
+    font: 800 clamp(42px, 7vw, 76px)/1.02 var(--serif);
+    font-variation-settings: "opsz" 60;
+    letter-spacing: -.028em;
+    margin: 0 auto 22px; max-width: 14em; text-wrap: balance;
+  }
+  .lede { font: 400 clamp(18px, 2.3vw, 21px)/1.55 var(--serif); color: var(--ink-2); max-width: 36em; margin: 0 auto 32px; }
+  .cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .fine { margin-top: 16px; font-size: 13.5px; color: var(--muted); }
+
+  /* The window, sitting on a soft desktop */
+  .desktop {
+    position: relative; margin: 56px auto 0; max-width: 1180px;
+    padding: clamp(12px, 3vw, 40px) clamp(0px, 1.2vw, 14px) 0; /* the screenshot carries its own shadow margin */
+    border-radius: 28px; overflow: hidden;
+    background:
+      radial-gradient(120% 90% at 10% 0%, #f6d8b8 0%, transparent 55%),
+      radial-gradient(90% 80% at 95% 10%, #d9c7ef 0%, transparent 55%),
+      radial-gradient(120% 100% at 50% 110%, #b9cfe6 0%, transparent 60%),
+      linear-gradient(180deg, #efe4d6, #dfe3ea);
+  }
+  @media (prefers-color-scheme: dark) {
+    .desktop {
+      background:
+        radial-gradient(120% 90% at 10% 0%, #5a3a2a 0%, transparent 55%),
+        radial-gradient(90% 80% at 95% 10%, #3b2f57 0%, transparent 55%),
+        radial-gradient(120% 100% at 50% 110%, #1f3550 0%, transparent 60%),
+        linear-gradient(180deg, #2a231e, #181c24);
+    }
+  }
+  .desktop img { margin: 0 auto -6%; width: 100%; }
+
+  /* ---------- Sections ---------- */
+  section { padding: 96px 0; }
+  .section-head { max-width: 640px; margin: 0 auto 56px; text-align: center; }
+  .kicker { font: 600 12.5px/1 var(--sans); letter-spacing: .1em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+  h2 { text-wrap: balance; font: 700 clamp(32px, 4.6vw, 48px)/1.08 var(--serif); letter-spacing: -.02em; margin: 0 0 16px; font-variation-settings: "opsz" 48; }
+  .section-head p { color: var(--ink-2); font: 400 19px/1.55 var(--serif); margin: 0; }
+
+  /* How it works */
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .step { background: var(--card); border: 1px solid var(--rule); border-radius: 20px; padding: 28px 28px 30px; box-shadow: var(--shadow); }
+  .step .num { font: 300 46px/1 var(--serif); color: var(--accent); margin-bottom: 18px; }
+  .step h3 { font: 700 21px/1.25 var(--serif); margin: 0 0 8px; }
+  .step p { margin: 0; color: var(--ink-2); font-size: 15.5px; line-height: 1.6; }
+  .step kbd { font: 500 13px/1 var(--sans); padding: 2px 6px; border: 1px solid var(--rule); border-bottom-width: 2px; border-radius: 5px; background: var(--paper); }
+  @media (max-width: 860px) { .steps { grid-template-columns: 1fr; } }
+
+  /* Printed pages on a table */
+  .table {
+    background: var(--paper-2);
+    border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+    overflow: hidden;
+  }
+  .spread { position: relative; height: clamp(360px, 52vw, 620px); max-width: 1040px; margin: 0 auto; }
+  .page {
+    position: absolute; width: clamp(200px, 30vw, 330px);
+    background: #fff; border-radius: 2px;
+    box-shadow: 0 1px 1px rgba(0,0,0,.08), 0 3px 6px rgba(0,0,0,.06), 0 24px 48px -16px rgba(40,30,10,.38);
+    transition: transform .35s ease;
+  }
+  .page img { border-radius: 2px; }
+  .page:hover { z-index: 5; }
+  .p1 { left: 2%;  top: 9%;  transform: rotate(-7deg); }
+  .p2 { left: 20%; top: 2%;  transform: rotate(-2deg); z-index: 2; }
+  .p3 { left: 38%; top: 0;   transform: rotate(1.5deg); z-index: 3; }
+  .p4 { left: 56%; top: 4%;  transform: rotate(4deg); z-index: 2; }
+  .p5 { right: 2%; top: 12%; transform: rotate(8deg); }
+  .p1:hover { transform: rotate(-7deg) translateY(-10px); }
+  .p2:hover { transform: rotate(-2deg) translateY(-10px); }
+  .p3:hover { transform: rotate(1.5deg) translateY(-10px); }
+  .p4:hover { transform: rotate(4deg) translateY(-10px); }
+  .p5:hover { transform: rotate(8deg) translateY(-10px); }
+  @media (max-width: 720px) {
+    .spread { height: auto; display: flex; gap: 14px; overflow-x: auto; padding: 8px 24px 28px; scroll-snap-type: x mandatory; }
+    .page { position: static; flex: 0 0 72%; transform: none !important; scroll-snap-align: center; }
+  }
+  .caption-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; max-width: 980px; margin: 40px auto 0; }
+  .caption-row div { font-size: 15px; color: var(--ink-2); line-height: 1.55; }
+  .caption-row b { display: block; font: 700 17px/1.3 var(--serif); color: var(--ink); margin-bottom: 4px; }
+  @media (max-width: 860px) { .caption-row { grid-template-columns: 1fr; gap: 18px; } }
+
+  /* Feature grid */
+  .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--rule); border: 1px solid var(--rule); border-radius: 22px; overflow: hidden; }
+  .feature { background: var(--card); padding: 30px 28px 32px; }
+  .feature .ico { width: 38px; height: 38px; border-radius: 10px; display: grid; place-items: center; background: color-mix(in srgb, var(--accent) 12%, transparent); color: var(--accent); margin-bottom: 18px; }
+  .feature .ico svg { width: 21px; height: 21px; }
+  .feature h3 { font: 700 19px/1.3 var(--serif); margin: 0 0 6px; }
+  .feature p { margin: 0; font-size: 15px; line-height: 1.6; color: var(--ink-2); }
+  @media (max-width: 920px) { .features { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 600px) { .features { grid-template-columns: 1fr; } }
+
+  /* Side-by-side detail */
+  .detail { display: grid; grid-template-columns: 1.05fr 1fr; gap: 64px; align-items: center; }
+  .detail h2 { text-align: left; }
+  .detail p { font: 400 19px/1.6 var(--serif); color: var(--ink-2); margin: 0 0 14px; }
+  .detail .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .detail .pair img { background: #fff; box-shadow: 0 2px 4px rgba(0,0,0,.06), 0 22px 44px -18px rgba(40,30,10,.4); border-radius: 2px; }
+  .detail .pair img:last-child { transform: translateY(34px); }
+  @media (max-width: 860px) { .detail { grid-template-columns: 1fr; gap: 40px; } .detail .pair img:last-child { transform: none; } }
+
+  /* Open source */
+  .oss { background: var(--ink); color: var(--paper); border-radius: 28px; padding: clamp(36px, 6vw, 72px); display: grid; grid-template-columns: 1.3fr 1fr; gap: 48px; align-items: center; }
+  .oss h2 { color: var(--paper); }
+  .oss p { color: color-mix(in srgb, var(--paper) 78%, transparent); font: 400 18px/1.6 var(--serif); margin: 0 0 24px; }
+  .oss .btn-primary { background: var(--paper); color: var(--ink); }
+  .oss .btn-ghost { background: transparent; color: var(--paper); border-color: color-mix(in srgb, var(--paper) 30%, transparent); }
+  .stack { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; font-size: 15px; }
+  .stack li { display: flex; gap: 12px; align-items: baseline; padding-bottom: 12px; border-bottom: 1px solid color-mix(in srgb, var(--paper) 14%, transparent); color: color-mix(in srgb, var(--paper) 85%, transparent); }
+  .stack li b { min-width: 104px; font-weight: 600; color: var(--paper); }
+  @media (prefers-color-scheme: dark) { .oss { background: #f3efe7; color: #1b1a17; } .oss h2, .stack li b { color: #1b1a17; } .oss p, .stack li { color: #3a3833; } .stack li { border-color: #ddd6c9; } .oss .btn-primary { background: #1b1a17; color: #f3efe7; } .oss .btn-ghost { color: #1b1a17; border-color: #cfc8ba; } }
+  @media (max-width: 860px) { .oss { grid-template-columns: 1fr; } }
+
+  /* Closing */
+  .closing { text-align: center; padding: 104px 0 96px; }
+  .closing img.icon { width: 84px; height: 84px; margin: 0 auto 22px; filter: drop-shadow(0 10px 18px rgba(30,20,0,.2)); }
+  .closing h2 { max-width: 16ch; margin: 0 auto 14px; }
+  .closing p { color: var(--ink-2); font: 400 19px/1.55 var(--serif); margin: 0 auto 28px; max-width: 34em; }
+
+  footer { border-top: 1px solid var(--rule); padding: 30px 0 42px; font-size: 14px; color: var(--muted); }
+  footer .wrap { display: flex; gap: 20px; flex-wrap: wrap; align-items: center; }
+  footer a { color: var(--muted); text-decoration: none; }
+  footer a:hover { color: var(--ink); }
+  footer .links { margin-left: auto; display: flex; gap: 20px; }
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="#"><img src="{{ASSETS}}/icon.webp" alt="" width="30" height="30">Galley</a>
+    <nav class="nav-links">
+      <a href="#how">How it works</a>
+      <a href="#pages">Pages</a>
+      <a href="#features">Features</a>
+      <a href="https://github.com/robertritz/galley">GitHub</a>
+    </nav>
+    <a class="btn btn-primary" href="https://github.com/robertritz/galley/releases/latest/download/Galley.dmg">Download</a>
+  </div>
+</header>
+
+<main>
+  <div class="hero">
+    <div class="wrap">
+      <img class="icon" src="{{ASSETS}}/icon.webp" alt="Galley app icon" width="116" height="116">
+      <div class="eyebrow">Free &amp; open source<span class="dot"></span>For Mac</div>
+      <h1>Your reading list, printed as a magazine.</h1>
+      <p class="lede">Galley turns the links you save into beautifully set editions — a cover, a contents page, two columns, numbered pages — ready for the printer on your desk.</p>
+      <div class="cta">
+        <a class="btn btn-primary" href="https://github.com/robertritz/galley/releases/latest/download/Galley.dmg">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.37 12.62c-.02-2.3 1.88-3.4 1.96-3.46-1.07-1.56-2.73-1.78-3.32-1.8-1.41-.14-2.76.83-3.47.83-.72 0-1.82-.81-3-.79-1.54.02-2.96.9-3.76 2.27-1.6 2.78-.41 6.89 1.15 9.14.76 1.1 1.67 2.34 2.86 2.3 1.15-.05 1.58-.74 2.97-.74 1.38 0 1.77.74 2.98.72 1.24-.02 2.02-1.12 2.77-2.23.87-1.28 1.23-2.52 1.25-2.58-.03-.01-2.4-.92-2.42-3.66zM14.1 5.86c.63-.77 1.06-1.83.94-2.89-.91.04-2.02.61-2.67 1.37-.58.67-1.1 1.76-.96 2.8 1.02.08 2.06-.52 2.69-1.28z"/></svg>
+          Download for Mac
+        </a>
+        <a class="btn btn-ghost" href="https://github.com/robertritz/galley">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.87-1.37-3.87-1.37-.53-1.33-1.28-1.69-1.28-1.69-1.05-.71.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.71 1.26 3.37.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.8 1.19 1.83 1.19 3.09 0 4.42-2.7 5.39-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5z"/></svg>
+          View on GitHub
+        </a>
+      </div>
+      <p class="fine">Version 0.2.0 · macOS 15 or later · Signed &amp; notarized by Apple</p>
+    </div>
+    <div class="wrap">
+      <div class="desktop">
+        <img src="{{ASSETS}}/app-window.webp" alt="The Galley window: editions in the sidebar, the articles of “Print &amp; Type”, and its magazine cover in the preview" width="2000" height="1339">
+      </div>
+    </div>
+  </div>
+
+  <section id="how">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="kicker">How it works</div>
+        <h2>From saved link to printed page</h2>
+        <p>No account, no subscription, nothing in the cloud. Galley does everything on your Mac.</p>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="num">1</div>
+          <h3>Save what you want to read</h3>
+          <p>Choose <b>Share → Galley</b> in Safari or any app, paste a link with <kbd>⌘V</kbd>, or drop it on the window. Galley fetches the article and its photos.</p>
+        </div>
+        <div class="step">
+          <div class="num">2</div>
+          <h3>Gather it into editions</h3>
+          <p>Make an edition for the weekend, for a topic, or for a trip. Reorder stories, pick the cover story, leave out the parts you don’t need.</p>
+        </div>
+        <div class="step">
+          <div class="num">3</div>
+          <h3>Print it and read it</h3>
+          <p>Galley sets the whole edition like a magazine in a couple of seconds. Print it at home on A4 or Letter, staple it, and read it away from the screen.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="pages" class="table">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="kicker">Made for paper</div>
+        <h2>Pages worth printing</h2>
+        <p>Real typesetting, not a web page sent to the printer.</p>
+      </div>
+    </div>
+    <div class="spread">
+      <div class="page p1"><img src="{{ASSETS}}/page-cover-sky.webp" alt="The cover of an edition called Beyond the Sky" width="1100" height="1424" loading="lazy"></div>
+      <div class="page p2"><img src="{{ASSETS}}/page-contents.webp" alt="A contents page with page numbers" width="1100" height="1424" loading="lazy"></div>
+      <div class="page p3"><img src="{{ASSETS}}/page-cover.webp" alt="The cover of an edition called Print &amp; Type" width="1100" height="1424" loading="lazy"></div>
+      <div class="page p4"><img src="{{ASSETS}}/page-opener.webp" alt="The opening page of an article in two columns" width="1100" height="1424" loading="lazy"></div>
+      <div class="page p5"><img src="{{ASSETS}}/page-spread.webp" alt="A two-column page with photographs and captions" width="1100" height="1424" loading="lazy"></div>
+    </div>
+    <div class="wrap">
+      <div class="caption-row">
+        <div><b>A cover every time</b>The lead story’s photo — or, if nothing has one, an openly licensed photo found to match the edition.</div>
+        <div><b>A contents page that’s right</b>Page numbers are filled in after layout, so they always match the printed pages.</div>
+        <div><b>Two balanced columns</b>Source Serif and Inter, drop caps, captions, running heads, and columns that even out at the end of each story.</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="features">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="kicker">Features</div>
+        <h2>Small touches that add up</h2>
+      </div>
+      <div class="features">
+        <div class="feature">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M8 7l4-4 4 4"/><rect x="4" y="11" width="16" height="10" rx="2"/></svg></div>
+          <h3>Share from anywhere</h3>
+          <p>A Share extension for Safari, Chrome and any app with a Share menu — plus a <code>galley://</code> link for Shortcuts.</p>
+        </div>
+        <div class="feature">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M3 12h11"/><path d="M3 18h7"/><path d="M15 15l6 6"/><path d="M21 15l-6 6"/></svg></div>
+          <h3>Leave out what you don’t need</h3>
+          <p>Double-click an article to see exactly what Galley found, then click any paragraph or picture to drop it from the printout.</p>
+        </div>
+        <div class="feature">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M12 4v16"/><path d="M6 8h3M6 11h3M15 8h3M15 11h3"/></svg></div>
+          <h3>Two columns or one</h3>
+          <p>A proper two-column magazine layout, or a single generous column if you prefer. Headlines and photos stay big.</p>
+        </div>
+        <div class="feature">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 7h6M9 11h6M9 15h3"/></svg></div>
+          <h3>A4 or US Letter</h3>
+          <p>Sized for the printer you have, with margins home printers can actually print. Colour, greyscale, or text only.</p>
+        </div>
+        <div class="feature">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></div>
+          <h3>Private by design</h3>
+          <p>No account and no server. Articles are fetched and kept on your Mac, and editions are laid out right there.</p>
+        </div>
+        <div class="feature">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V5h16v2"/><path d="M12 5v14"/><path d="M9 19h6"/></svg></div>
+          <h3>Latin and Cyrillic type</h3>
+          <p>The bundled typefaces cover English, European languages and Cyrillic scripts, with proper hyphenation.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap detail">
+      <div>
+        <div class="kicker">Why paper</div>
+        <h2>Read slowly, away from the screen</h2>
+        <p>Galley was inspired by services that post you a printed magazine of your saved articles each month. It brings the same idea home: anywhere you have a printer, you can have your own magazine.</p>
+        <p>Keep one edition for the week, another for a long flight, and a third for the topic you’re digging into. Print whichever one is ready.</p>
+      </div>
+      <div class="pair">
+        <img src="{{ASSETS}}/page-gutenberg.webp" alt="An article about Johannes Gutenberg laid out in two columns" width="1100" height="1424" loading="lazy">
+        <img src="{{ASSETS}}/page-spread.webp" alt="A two-column page about letterpress printing" width="1100" height="1424" loading="lazy">
+      </div>
+    </div>
+  </section>
+
+  <section style="padding-top: 40px;">
+    <div class="wrap">
+      <div class="oss">
+        <div>
+          <div class="kicker" style="color: inherit; opacity: .6;">Open source</div>
+          <h2>Free, open, and yours to change</h2>
+          <p>Galley is MIT-licensed and built in the open. Read the code, report a bug, or design a theme of your own — themes are plain CSS.</p>
+          <div class="cta" style="justify-content: flex-start;">
+            <a class="btn btn-primary" href="https://github.com/robertritz/galley">Star on GitHub</a>
+            <a class="btn btn-ghost" href="https://github.com/robertritz/galley/releases">Release notes</a>
+          </div>
+        </div>
+        <ul class="stack">
+          <li><b>App</b>SwiftUI and SwiftData</li>
+          <li><b>Reading</b>WebKit and Mozilla Readability</li>
+          <li><b>Layout</b>Paged.js, composed into columns</li>
+          <li><b>Type</b>Source Serif 4 and Inter</li>
+          <li><b>Covers</b>Openverse, on-device Vision</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <div class="closing">
+    <div class="wrap">
+      <img class="icon" src="{{ASSETS}}/icon.webp" alt="" width="84" height="84">
+      <h2>Make your first edition tonight.</h2>
+      <p>Free for macOS 15 and later. Drag it to Applications, paste a link, press Print.</p>
+      <a class="btn btn-primary" href="https://github.com/robertritz/galley/releases/latest/download/Galley.dmg">Download Galley</a>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Galley · made by <a href="https://robertritz.com">Robert Ritz</a></span>
+    <span class="links">
+      <a href="https://github.com/robertritz/galley">GitHub</a>
+      <a href="https://github.com/robertritz/galley/releases">Releases</a>
+      <a href="https://github.com/robertritz/galley/blob/main/LICENSE">MIT License</a>
+    </span>
+  </div>
+</footer>
+
+</body>
+</html>

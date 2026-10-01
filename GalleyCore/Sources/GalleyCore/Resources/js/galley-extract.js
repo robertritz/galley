@@ -170,6 +170,23 @@ for (const p of root.querySelectorAll("p, div, span")) {
   if (!p.textContent.trim() && !p.querySelector("img, aside, br, hr")) p.remove();
 }
 
+// The publication's name as readers know it. Structured data often gives the
+// publisher's legal name ("Wikimedia Foundation, Inc."); the page title usually
+// ends with the familiar one ("Voyager 1 - Wikipedia").
+function siteName() {
+  const og = meta("og:site_name");
+  if (og) return og.trim();
+  const legal = /\b(Inc\.?|LLC|Ltd\.?|Limited|Foundation|Corporation|Corp\.?|GmbH|PLC)\b/i;
+  const fromTitle = (() => {
+    const t = meta("og:title") || document.title || "";
+    const m = t.match(/\s[-–—|·:]\s([^-–—|·:]{2,32})$/);
+    return m ? m[1].trim() : null;
+  })();
+  const name = (parsed.siteName || "").trim();
+  if (name && !legal.test(name)) return name;
+  return fromTitle || name || location.hostname.replace(/^www\./, "");
+}
+
 const text = root.textContent || "";
 const wordCount = (text.match(/\S+/g) || []).length;
 
@@ -177,7 +194,7 @@ return {
   ok: true,
   title,
   byline: (parsed.byline || ldAuthor(ldArticle && ldArticle.author) || meta("author", "article:author") || "").trim() || null,
-  siteName: (parsed.siteName || meta("og:site_name", "application-name") || location.hostname.replace(/^www\./, "")).trim(),
+  siteName: siteName(),
   excerpt: (parsed.excerpt || meta("og:description", "description") || "").trim() || null,
   publishedTime: parsed.publishedTime || (ldArticle && ldArticle.datePublished) || meta("article:published_time", "date") || null,
   lang: parsed.lang || document.documentElement.lang || null,
