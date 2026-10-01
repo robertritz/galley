@@ -53,10 +53,7 @@ struct SidebarView: View {
     private func row(_ edition: Edition) -> some View {
         // Two-line row with the icon centred on both lines, like Mail's mailboxes.
         HStack(spacing: 8) {
-            Image(systemName: edition.state == .printed ? "checkmark.circle" : "doc.text.image")
-                .font(.body)
-                .foregroundStyle(.tint)
-                .frame(width: 20)
+            SidebarIcon(systemName: edition.state == .printed ? "checkmark.circle" : "doc.text.image")
             VStack(alignment: .leading, spacing: 1) {
                 Text(edition.displayName).lineLimit(1)
                 Text(subtitle(edition)).font(.caption).foregroundStyle(.secondary).lineLimit(1)
@@ -110,5 +107,19 @@ struct SidebarView: View {
             if selection == .edition(edition.id) { selection = nil }
             library.delete(edition)
         }
+    }
+}
+
+/// An accent-coloured sidebar icon that turns white on a selected row, as built-in
+/// sidebar labels do. (A plain tint would vanish into the blue selection.)
+private struct SidebarIcon: View {
+    let systemName: String
+    @Environment(\.backgroundProminence) private var prominence
+
+    var body: some View {
+        Image(systemName: systemName)
+            .font(.body)
+            .foregroundStyle(prominence == .increased ? AnyShapeStyle(.white) : AnyShapeStyle(.tint))
+            .frame(width: 20)
     }
 }

@@ -26,7 +26,9 @@ struct EditionPreview: View {
     var body: some View {
         ZStack {
             if let document {
+                // Run under the toolbar so pages scroll behind its glass, as in Mail.
                 PDFKitView(document: document, page: targetPage)
+                    .ignoresSafeArea(.container, edges: .top)
             } else if let error = library.renderErrors[edition.id] {
                 ContentUnavailableView("No Preview", systemImage: "doc.richtext", description: Text(error))
             } else if edition.printableArticles.isEmpty {
@@ -104,6 +106,7 @@ struct PDFKitView: NSViewRepresentable {
         view.pageShadowsEnabled = true
         view.backgroundColor = .underPageBackgroundColor
         view.document = document
+        context.coordinator.attach(to: view)
         return view
     }
 
@@ -111,6 +114,7 @@ struct PDFKitView: NSViewRepresentable {
         if view.document !== document {
             let current = view.currentPage.flatMap { view.document?.index(for: $0) }
             view.document = document
+            context.coordinator.attach(to: view)
             if let current, let restored = document.page(at: min(current, document.pageCount - 1)) {
                 view.go(to: restored)
             }
@@ -125,6 +129,28 @@ struct PDFKitView: NSViewRepresentable {
 
     final class Coordinator {
         var lastPage: Int?
+        private weak var scrollView: NSScrollView?
+        private var observer: NSObjectProtocol?
+
+        /// PDFView keeps its scroll view private; reach it through the document view.
+        /// Overlay scrollers are the thin, translucent kind that float over the pages;
+        /// content insets let the first page start below the toolbar and scroll under it.
+        func attach(to view: PDFView) {
+            guard let scrollView = view.documentView?.enclosingScrollView else { return }
+            self.scrollView = scrollView
+            scrollView.automaticallyAdjustsContentInsets = true
+            scrollView.scrollerStyle = .overlay
+            // macOS resets the style when the "Show scroll bars" setting changes.
+            observer = NotificationCenter.default.addObserver(
+                forName: NSScroller.preferredScrollerStyleDidChangeNotification, object: nil, queue: .main
+            ) { [weak self] _ in
+                MainActor.assumeIsolated { self?.scrollView?.scrollerStyle = .overlay }
+            }
+        }
+
+        isolated deinit {
+            if let observer { NotificationCenter.default.removeObserver(observer) }
+        }
     }
 }
 
