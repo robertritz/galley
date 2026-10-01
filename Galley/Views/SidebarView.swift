@@ -6,7 +6,6 @@ struct SidebarView: View {
     @Binding var selection: SidebarItem?
     @Binding var naming: EditionNaming
     @Environment(Library.self) private var library
-    @Environment(\.openWindow) private var openWindow
     @Query(sort: \Edition.number, order: .reverse) private var editions: [Edition]
     @Query private var articles: [Article]
 
@@ -39,35 +38,31 @@ struct SidebarView: View {
         }
         .listStyle(.sidebar)
         .safeAreaInset(edge: .bottom) {
-            HStack {
-                Button {
-                    naming = EditionNaming(isPresented: true)
-                } label: {
-                    Label("New Edition", systemImage: "plus")
-                }
-                .help("Make a new edition (⌘N)")
-                Spacer()
-                Button {
-                    openWindow(id: "browser", value: BrowserRequest())
-                } label: {
-                    Image(systemName: "person.badge.key")
-                }
-                .help("Sign in to sites you subscribe to")
+            Button {
+                naming = EditionNaming(isPresented: true)
+            } label: {
+                Label("New Edition", systemImage: "plus")
+                    .frame(maxWidth: .infinity, alignment: .leading)
             }
             .buttonStyle(.borderless)
+            .help("Make a new edition (⌘N)")
             .padding(10)
         }
     }
 
     private func row(_ edition: Edition) -> some View {
-        Label {
+        // Two-line row with the icon centred on both lines, like Mail's mailboxes.
+        HStack(spacing: 8) {
+            Image(systemName: edition.state == .printed ? "checkmark.circle" : "doc.text.image")
+                .font(.body)
+                .foregroundStyle(.tint)
+                .frame(width: 20)
             VStack(alignment: .leading, spacing: 1) {
                 Text(edition.displayName).lineLimit(1)
-                Text(subtitle(edition)).font(.caption).foregroundStyle(.secondary)
+                Text(subtitle(edition)).font(.caption).foregroundStyle(.secondary).lineLimit(1)
             }
-        } icon: {
-            Image(systemName: edition.state == .printed ? "checkmark.circle" : "newspaper")
         }
+        .padding(.vertical, 2)
         .badge(edition.articles.count)
         .tag(SidebarItem.edition(edition.id))
         .dropDestination(for: URL.self) { urls, _ in
