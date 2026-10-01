@@ -7,8 +7,10 @@ struct EditionView: View {
     @Bindable var edition: Edition
     @Binding var selectedArticleID: UUID?
     @Binding var showingAddLink: Bool
+    @Binding var naming: EditionNaming
     @Environment(Library.self) private var library
     @Environment(\.openWindow) private var openWindow
+    @Query(sort: \Edition.number, order: .reverse) private var editions: [Edition]
 
     var body: some View {
         List(selection: $selectedArticleID) {
@@ -28,28 +30,37 @@ struct EditionView: View {
                 ContentUnavailableView {
                     Label("No Articles Yet", systemImage: "link.badge.plus")
                 } description: {
-                    Text("Paste a link (⌘V), drop one here, or press ⌘L.\nArticles you add go into this edition.")
+                    Text("Paste a link (⌘V), drop one here, or press ⌘L.\nArticles you add while looking at this edition go into it.")
                 } actions: {
                     Button("Add Link…") { showingAddLink = true }
                 }
             }
         }
-        .navigationTitle("\(Pref.mastheadName) \(edition.title)")
-        .navigationSubtitle(edition.state == .open ? "Collecting" : edition.dateLabel)
+        .navigationTitle(edition.displayName)
+        .navigationSubtitle(edition.name.isEmpty ? (edition.state == .printed ? "Printed" : "Draft") : "No. \(edition.number)")
         .toolbar {
             ToolbarItemGroup {
                 Button { showingAddLink = true } label: { Label("Add Link", systemImage: "plus") }
-                    .help("Add links to the next edition (⌘L)")
-                switch edition.state {
-                case .open:
-                    Button { library.close(edition) } label: { Label("Close Edition", systemImage: "checkmark.seal") }
-                        .help("Finish this edition now and start the next one")
-                        .disabled(edition.printableArticles.isEmpty)
-                case .closed:
-                    Button { library.markPrinted(edition) } label: { Label("Mark as Printed", systemImage: "checkmark.circle") }
-                case .printed:
-                    EmptyView()
+                    .help("Add links to this edition (⌘L)")
+                Menu {
+                    Button("Rename…") { naming = .rename(edition) }
+                    Divider()
+                    Section("Cover Photo") {
+                        Button("Find a Photo Online") { Task { await library.findCoverPhoto(for: edition) } }
+                        Button("Choose a Photo…") { library.chooseCoverPhoto(for: edition) }
+                        Button("Use the Cover Story’s Photo") { library.useStoryPhoto(for: edition) }
+                            .disabled(!edition.coverPhotoIsChosen)
+                    }
+                    Divider()
+                    if edition.state == .draft {
+                        Button("Mark as Printed") { library.markPrinted(edition) }
+                    } else {
+                        Button("Move Back to Editions") { library.markDraft(edition) }
+                    }
+                } label: {
+                    Label("Edition", systemImage: "ellipsis.circle")
                 }
+                .help("Rename, change the cover photo, or mark as printed")
             }
         }
     }
@@ -57,10 +68,12 @@ struct EditionView: View {
     private var header: some View {
         let printable = edition.printableArticles
         let minutes = printable.reduce(0) { $0 + $1.readingMinutes }
+        var line = "\(printable.count) \(printable.count == 1 ? "story" : "stories") · about \(minutes) min of reading"
+        if let pages = edition.pageCount, !printable.isEmpty { line += " · \(pages) pages" }
         return VStack(alignment: .leading, spacing: 2) {
-            Text("\(printable.count) \(printable.count == 1 ? "story" : "stories") · about \(minutes) min of reading" + (edition.pageCount.map { " · \($0) pages" } ?? ""))
-            if edition.state == .open, let end = edition.periodEnd {
-                Text("Closes \(end.formatted(date: .complete, time: .omitted))")
+            Text(line)
+            if let printed = edition.printedAt {
+                Text("Printed \(printed.formatted(date: .long, time: .omitted))")
             }
         }
         .font(.caption)
@@ -83,8 +96,15 @@ struct EditionView: View {
         }
         Button("Fetch Again") { library.retry(article) }
         Divider()
-        if edition.state != .open {
-            Button("Move to Next Edition") { library.move(article, to: library.openEdition()) }
+        Menu("Move To") {
+            ForEach(editions.filter { $0.id != edition.id }) { other in
+                Button(other.displayName + (other.state == .printed ? " (printed)" : "")) { library.move(article, to: other) }
+            }
+            Divider()
+            Button("New Edition") {
+                let other = library.createEdition()
+                library.move(article, to: other)
+            }
         }
         Button("Remove", role: .destructive) {
             if selectedArticleID == article.id { selectedArticleID = nil }
@@ -156,7 +176,7 @@ struct ArticleRow: View {
         var parts: [String] = []
         if let by = article.byline { parts.append(by) }
         parts.append("\(article.readingMinutes) min")
-        if showEdition, let edition = article.edition { parts.append(edition.title) }
+        if showEdition, let edition = article.edition { parts.append(edition.displayName) }
         return parts.joined(separator: " · ")
     }
 

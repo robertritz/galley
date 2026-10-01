@@ -2,10 +2,10 @@
 
 **Print your reading list as a magazine.**
 
-Galley is a Mac app that turns links into a printed magazine. Save articles as you
-find them; each week (or day, or month) Galley gathers them into an **edition** with a
-cover, a table of contents and numbered pages, laid out like a magazine and ready
-for your printer.
+Galley is a Mac app that turns links into a printed magazine. Save articles into
+**editions**, as many as you like, by topic or by week. Each one is laid out like a
+magazine, with a cover, a table of contents, two columns and numbered pages, ready for
+your printer.
 
 It's inspired by Offprint, a service that prints and posts a personal
 magazine every month. Galley does the same job on your own Mac, for your own printer,
@@ -19,12 +19,15 @@ wherever you live.
 - **Paste a link, get a magazine article.** Galley opens the page in a real WebKit
   browser, pulls out the article with Mozilla's Readability (the engine behind
   Firefox Reader View), downloads the photos and saves a copy on your Mac.
-- **Editions.** New articles go into the next edition. It closes on your schedule
-  (weekly on Sunday by default; daily, monthly or manual in Settings), is laid out,
-  and Galley tells you it's ready to print.
-- **Magazine layout.** A cover with the lead story's photo, a contents page, page numbers
+- **Editions are folders.** Make one whenever you like (⌘N), name it ("Climate",
+  "Weekend Reading"), and add links to it. Move articles between editions, and mark an
+  edition printed when you've printed it.
+- **Magazine layout.** Two columns (or one), a cover, a contents page, page numbers
   and running headers, drop caps, captions, and links turned into numbered notes. Each
   article ends with a QR code back to the original.
+- **Always a cover.** The cover uses the lead story's photo. If no story has one, Galley
+  finds an openly licensed photo on [Openverse](https://openverse.org) to match the edition's
+  name and prints the credit. You can also choose your own. Offline, it sets a text-only cover.
 - **Home printing.** A4 or US Letter, one-sided, with margins a home printer can handle.
   Colour, greyscale or text-only images.
 - **Latin and Cyrillic.** The bundled fonts (Source Serif 4 and Inter) cover Mongolian and
@@ -53,7 +56,7 @@ extraction and layout:
 
 ```bash
 cd GalleyCore
-swift run galley-cli https://example.com/some-article --paper a4 --out ~/Desktop/test.pdf
+swift run galley-cli https://example.com/some-article --paper a4 --columns 2 --title "Test" --out ~/Desktop/test.pdf
 ```
 
 Set `GALLEY_ROOT=/some/folder` to keep test files out of your real library. If your
@@ -65,11 +68,13 @@ with `--scratch-path` somewhere outside it; iCloud's file attributes break code 
 ```
 URL → offscreen WKWebView → Readability.js → images saved locally
     → edition.html (cover + contents + articles, theme CSS)
-    → Paged.js paginates in WebKit → each page captured to PDF → print
+    → Paged.js paginates in WebKit → pages paired into two columns
+    → each page captured to PDF → print
 ```
 
-- `GalleyCore/` — fetching (`ArticleExtractor`), layout (`EditionRenderer`,
-  `EditionHTML`), schedules (`Cadence`), and the bundled JavaScript, themes and fonts.
+- `GalleyCore/`: fetching (`ArticleExtractor`), layout (`EditionRenderer`,
+  `EditionHTML`, `galley-render.js`), cover photos (`CoverPhotoFinder`), and the bundled
+  JavaScript, themes and fonts.
 - `Galley/` — the SwiftUI app: SwiftData models, the library controller, and views.
 
 Your library lives in `~/Library/Application Support/Galley`: one folder per article

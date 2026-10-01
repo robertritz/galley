@@ -3,7 +3,8 @@ import GalleyCore
 
 // A small command-line front end to GalleyCore, used for development and testing.
 //
-//     galley-cli <url> [<url> …] [--paper a4|letter] [--images color|grayscale|none] [--out edition.pdf]
+//     galley-cli <url> [<url> …] [--paper a4|letter] [--columns 1|2] [--images color|grayscale|none]
+//                [--title "Edition name"] [--out edition.pdf]
 //
 // Files go to $GALLEY_ROOT (default: ~/Library/Application Support/Galley).
 
@@ -12,12 +13,16 @@ func run() async -> Int32 {
     var urls: [URL] = []
     var paper = PaperSize.regionDefault
     var imageMode = ImageMode.color
+    var columns = ColumnLayout.two
+    var title: String?
     var out: URL?
     var args = CommandLine.arguments.dropFirst()
     while let arg = args.popFirst() {
         switch arg {
         case "--paper": paper = args.popFirst().flatMap(PaperSize.init(rawValue:)) ?? paper
         case "--images": imageMode = args.popFirst().flatMap(ImageMode.init(rawValue:)) ?? imageMode
+        case "--columns": columns = args.popFirst().flatMap(Int.init).flatMap(ColumnLayout.init(rawValue:)) ?? columns
+        case "--title": title = args.popFirst()
         case "--out": out = args.popFirst().map { URL(fileURLWithPath: $0) }
         default:
             if let url = URL(string: arg), url.scheme?.hasPrefix("http") == true { urls.append(url) }
@@ -25,7 +30,7 @@ func run() async -> Int32 {
         }
     }
     guard !urls.isEmpty else {
-        print("usage: galley-cli <url> [<url> …] [--paper a4|letter] [--images color|grayscale|none] [--out edition.pdf]")
+        print("usage: galley-cli <url> [<url> …] [--paper a4|letter] [--columns 1|2] [--images color|grayscale|none] [--title name] [--out edition.pdf]")
         return 64
     }
 
@@ -54,13 +59,24 @@ func run() async -> Int32 {
     guard !articles.isEmpty else { return 1 }
 
     let editionID = UUID()
-    let document = EditionDocument(
+    var document = EditionDocument(
         masthead: "Galley",
         number: 1,
-        dateLabel: Date().formatted(.dateTime.month(.wide).year()),
+        title: title,
+        dateLabel: Date().formatted(date: .long, time: .omitted),
         articles: articles,
-        settings: RenderSettings(paper: paper, imageMode: imageMode)
+        settings: RenderSettings(paper: paper, columns: columns, imageMode: imageMode)
     )
+    if document.needsCoverPhoto, imageMode != .none {
+        let query = title ?? CoverPhotoFinder.keywords(from: document.coverArticle?.metadata.title ?? "")
+        if let photo = await CoverPhotoFinder().find(query: query, into: paths.editionFolder(editionID)) {
+            print("Cover photo for “\(query)”: \(photo.credit ?? "no credit")")
+            document.coverPhoto = paths.editionFolder(editionID).appendingPathComponent(photo.file)
+            document.coverPhotoCredit = photo.credit
+        } else {
+            print("No cover photo found for “\(query)”; using a typographic cover.")
+        }
+    }
     do {
         let started = Date()
         let result = try await EditionRenderer(paths: paths).render(document, into: paths.editionFolder(editionID))
@@ -78,6 +94,7 @@ func run() async -> Int32 {
     }
 }
 
+setvbuf(stdout, nil, _IOLBF, 0)  // show progress line by line even when piped
 let app = NSApplication.shared
 app.setActivationPolicy(.prohibited)
 Task { @MainActor in

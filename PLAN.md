@@ -2,7 +2,7 @@
 
 > Print your reading list as a magazine.
 
-Galley is a Mac app that turns saved links into a printed magazine. You give it URLs. It extracts each article with its photos, lays everything out like a magazine (cover, contents page, numbered pages) and groups the articles into **editions** that you print at home: daily, weekly or monthly.
+Galley is a Mac app that turns saved links into a printed magazine. You give it URLs. It extracts each article with its photos, lays everything out like a magazine (cover, contents page, numbered pages) and groups the articles into **editions** that you print at home. You make editions whenever you like, by topic or by week.
 
 It is inspired by Offprint, a service that prints and posts a personal magazine each month. Galley runs locally instead, so it works anywhere with a printer, including places Offprint doesn't ship to. It starts as a personal tool and will be open-sourced once it's solid.
 
@@ -66,15 +66,16 @@ A standard three-column Mac layout (SwiftUI `NavigationSplitView`).
 
 An added article appears straight away with a spinner and fills in as it's fetched: title, source, word count and first image. If it fails, it gets a clear status ("Needs login", "Couldn't find the article", "Timed out") and a **Fix…** button.
 
-### 2.3 Editions and cadence
-- The **cadence** is a setting: *Daily*, *Weekly* (you pick the day), *Monthly* (you pick the date) or *Manual*.
-- There is always exactly one **open** edition, and new articles go into it.
-- When the cadence period ends, the open edition **closes**: its contents are fixed, its PDF is rendered, and a new open edition starts. You get a notification: *"Galley No. 12 is ready to print, 9 stories, 64 pages."*
-- **Close & Print** closes the open edition early whenever you like.
-- An edition you've closed can be reopened for changes until you mark it **Printed**.
-- **Page budget** (optional setting): a maximum page count, for example 60. If adding articles would go over it, the overflow moves to the next edition. The UI shows which articles are affected.
+### 2.3 Editions
+Editions work like folders, but flat (no editions inside editions).
+- **New Edition (⌘N)** makes one, with an optional name such as "Climate" or "Weekend Reading". Without a name it's shown by its issue number.
+- You can have **as many as you like** at once, for example one per topic.
+- Links go into **the edition you're looking at**. If you're not looking at one, they go into the edition you last added to.
+- Articles can be **moved between editions** or reordered by dragging.
+- An edition is either a **draft** or **printed**. Marking it printed moves it to the Printed section, and it can be moved back.
+- Issue numbers count up across all editions and appear on the cover.
 
-An edition moves through these states: `open → closed → printed`. You can go back from closed to open.
+*Changed on 1 Oct 2026:* the first version closed one "open" edition automatically on a daily, weekly or monthly schedule. That was replaced by editions you make yourself. A reminder to print on a schedule could come back later as an option (§9).
 
 ### 2.4 Printing
 - **Print** opens the standard macOS print dialog with the edition PDF. Your printer, number of copies and page range all work as usual.
@@ -83,7 +84,7 @@ An edition moves through these states: `open → closed → printed`. You can go
 
 ### 2.5 Settings
 - **Paper**: A4 or US Letter. The default depends on your region.
-- **Cadence**: daily, weekly, monthly or manual, plus the day or date.
+- **Layout**: two columns (default) or one column.
 - **Masthead**: the magazine's name on the cover. Defaults to "Galley"; you might use something like "The Ulaanbaatar Review".
 - **Theme**: see §5.4.
 - **Images**: full colour, greyscale (saves colour ink), or text only.
@@ -130,7 +131,7 @@ Galley/
     Models/                  #   SwiftData models
     Fetching/                #   WKWebView page loading, login sessions
     Extraction/              #   Readability bridge, clean-up, image download
-    Editions/                #   cadence, closing, page budget
+    CoverPhotoFinder.swift   #   cover photos from Openverse
     Rendering/               #   HTML building, Paged.js run, PDF output
   Resources/
     js/readability.js
@@ -308,18 +309,19 @@ Planned first themes:
 }
 ```
 
-Settings (cadence, paper, masthead, theme, image mode, link mode, page budget) are stored in `UserDefaults` / `@AppStorage`.
+Settings (paper, columns, masthead, theme, image mode, link mode) are stored in `UserDefaults` / `@AppStorage`.
 
 ---
 
-## 7. Scheduling editions
+## 7. Cover photos
 
-- Galley doesn't need to be running all the time. **At launch and every hour while it's open**, it checks whether the open edition's period has ended and closes it if so.
-- Notifications that arrive exactly on time, even when the app is closed, are a later option. They would need a small background helper started at login (`SMAppService`). Most people will add links often enough that the check at launch is enough.
-- Examples of how periods are calculated:
-  - monthly on the 1st: the period runs from 1 October at 00:00 to 1 November at 00:00, local time;
-  - weekly on Sunday: from one Sunday to the next;
-  - daily: midnight to midnight.
+The cover photo is chosen in this order:
+1. A photo you picked for the edition, from your files or by searching online.
+2. The cover story's own photo. The cover story is the one you starred, or the first article with a photo.
+3. If no article has a photo, a search on **Openverse** (openverse.org) for openly licensed photos, using the edition's name or keywords from the lead headline. The credit (photographer and licence) is printed on the photo. Openverse needs no API key, which suits an open-source app. Unsplash would need a developer key.
+4. If there's no network or no result, a **text-only cover**: a large headline and a large issue number as the graphic.
+
+Openverse matches keywords literally. Abstract names ("Ambition", "Big Ideas") can return odd photos, so **Find a Photo Online** tries the next result, and photos already used are skipped.
 
 ---
 
@@ -343,10 +345,10 @@ Each milestone ends with something you can use.
 - The Classic theme is finished; greyscale mode.
 - **Done when**: a printed edition looks like a magazine on paper, not a printed web page.
 
-### M3 — Cadence and settings
-- The cadence setting and closing editions automatically, notifications, and the page budget with overflow to the next edition.
-- The settings window (paper, masthead, theme, images, links).
-- **Done when**: set to weekly, editions close themselves and ask to be printed.
+### M3 — Editions as folders, two columns, settings ✅
+- Editions you create and name yourself, articles moved between them, and draft or printed states.
+- Two-column layout, the cover photo chain (§7), and the settings window (paper, columns, masthead, images, links).
+- **Done when**: you can keep several topic editions going and print any of them as a two-column magazine.
 
 ### M4 — Paywalls and difficult sites
 - The in-app sign-in window and the logins list.
@@ -379,9 +381,9 @@ Each milestone ends with something you can use.
 ## 10. Risks and open technical questions
 
 1. **Turning WebKit + Paged.js output into PDF pages.** Paged.js is built for Chrome's PDF printing. WebKit's printing may add scaling, margins or page breaks of its own. *Mitigation*: test this first in M0, and keep plan B (exporting each page's rectangle and joining them with PDFKit) ready. Plan C would be Vivliostyle.js, a similar layout library.
-2. **Multiple columns across pages in Paged.js** can be buggy. *Mitigation*: Classic stays single-column; Broadsheet is attempted only if M2 testing shows columns work.
+2. **Multiple columns across pages in Paged.js** don't work: Paged.js can't carry CSS columns from page to page, and text past the second column is lost. *Solved*: Galley lays article text out in a strip one column wide, lets Paged.js paginate it, then merges each pair of pages into one sheet with a left and right column (`galley-render.js`). The headline block stays full width, and the first right-hand column is shortened to start below it. Galley fills in page references itself after the merge.
 3. **Extraction quality** varies a lot between sites. *Mitigation*: the quality check, Fix… capture, per-site rules later, and a set of test articles (§11).
-4. **Performance** of a large edition (60+ pages, many images). *Mitigation*: shrink images when they're downloaded, render in the background, cache each article's HTML.
+4. **Performance.** *Found and fixed*: WebKit slows timers to about one a second in hidden windows, and never delivers animation frames there. That made Paged.js take around 25 s per edition and the extraction scroll around 15 s. Galley now runs Paged.js's frame callbacks through a `MessageChannel` and drives page scrolling from Swift. A 60-page edition lays out in about 2 s, and an article extracts in 2–4 s.
 5. **Font coverage** for Mongolian Cyrillic (the letters Ө and Ү). *Mitigation*: check every bundled font against them.
 6. **Legal and ethical questions around paywalls**: covered by the policy in §4.5, which also goes in the README.
 
@@ -390,17 +392,13 @@ Each milestone ends with something you can use.
 ## 11. Testing
 - **Extraction fixtures**: saved HTML from 20–30 real pages across news sites, blogs, Substack, Medium, Wikipedia and Mongolian sites (for example ikon.mn and news.mn). Tests run Readability on them offline and compare the title, byline, word count and image count with expected values.
 - **Rendering checks**: render a fixed test edition to PDF, then check the page count, the page numbers found in the text, and that the contents page numbers match where each article actually starts.
-- **Edition tests**: calculating periods, closing on schedule, and pushing overflow to the next edition. These use an injected clock so they don't depend on the real date.
 - **Checking on paper**: print one real edition at the end of each milestone. Some problems (text too small, images too dark, margins clipped) only show up on paper.
 
 ---
 
 ## 12. Decisions still to make
-- **Minimum macOS version**: 15 (recommended) or only the latest?
-- **First theme's look**: Classic single column (recommended) or two columns?
-- **Default cadence**: monthly like Offprint, or weekly?
-- **Where the code lives**: `yourname/galley` now, with the option of a `galley-press` organisation later.
-- **Apple Developer account** for notarised releases: needed by M6, not before.
+- **Apple Developer account** for signing and notarising the DMG: needed before sharing builds with anyone else.
+- **Sandboxing**: not needed for a DMG, but worth doing eventually.
 
 ---
 
@@ -410,3 +408,8 @@ Each milestone ends with something you can use.
 - **Platform**: a native Mac app (SwiftUI) for personal use first, then open source.
 - **Approach**: WKWebView + Readability.js + Paged.js, with nothing ever printed straight from the live site.
 - **Paywalls**: sign in inside the app, Fix… capture and the Safari extension. No bypassing.
+- **Minimum macOS**: 15.
+- **Distribution**: a signed, notarised DMG (signing comes later), not the Mac App Store.
+- **Editions**: you make them yourself, any number at a time, and add to them as you like (see §2.3).
+- **Layout**: two columns by default, with one column as a setting.
+- **Repository**: `robertritz/galley`, private until it's ready to open-source.

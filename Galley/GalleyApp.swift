@@ -54,7 +54,10 @@ struct GalleyCommands: Commands {
     @FocusedValue(\.galleyActions) private var actions
 
     var body: some Commands {
-        CommandGroup(after: .newItem) {
+        CommandGroup(replacing: .newItem) {
+            Button("New Edition…") { actions?.newEdition() }
+                .keyboardShortcut("n", modifiers: .command)
+                .disabled(actions == nil)
             Button("Add Link…") { actions?.addLink() }
                 .keyboardShortcut("l", modifiers: .command)
                 .disabled(actions == nil)
@@ -75,6 +78,7 @@ struct GalleyCommands: Commands {
 
 /// Menu commands implemented by the main window.
 struct GalleyActions {
+    var newEdition: () -> Void
     var addLink: () -> Void
     var openBrowser: () -> Void
     var printEdition: () -> Void

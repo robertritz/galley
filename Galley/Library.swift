@@ -3,11 +3,10 @@ import Foundation
 import GalleyCore
 import Observation
 import SwiftData
-import UserNotifications
 import WebKit
 
-/// Owns the app's behaviour: adding links, fetching articles, keeping exactly one
-/// open edition, closing editions on schedule, and rendering PDFs.
+/// Owns the app's behaviour: editions, adding links, fetching articles, and
+/// laying editions out as PDFs.
 @Observable
 final class Library {
     let paths = GalleyPaths.default
@@ -23,8 +22,9 @@ final class Library {
 
     private var fetchQueue: [UUID] = []
     private var activeFetches = 0
-    private let maxConcurrentFetches = 2
-    private var scheduleTimer: Timer?
+    private let maxConcurrentFetches = 3
+
+    private static let lastEditionKey = "lastEditionID"
 
     func start(context: ModelContext) {
         guard self.context == nil else { return }
@@ -38,80 +38,51 @@ final class Library {
             article.status = .queued
             enqueue(article)
         }
-        _ = openEdition()
-        checkSchedule()
-        scheduleTimer = Timer.scheduledTimer(withTimeInterval: 15 * 60, repeats: true) { _ in
-            Task { @MainActor in self.checkSchedule() }
-        }
+        if fetchAll(Edition.self).isEmpty { _ = createEdition() }
         save()
     }
 
     // MARK: Editions
 
-    /// The edition that new articles go into. Created on demand.
-    func openEdition() -> Edition {
-        let open = fetchAll(Edition.self).filter { $0.state == .open }.sorted { $0.number < $1.number }
-        if let edition = open.last { return edition }
+    @discardableResult
+    func createEdition(name: String = "") -> Edition {
         let number = (fetchAll(Edition.self).map(\.number).max() ?? 0) + 1
-        let start = Date.now
-        let cadence = Pref.cadence
-        let end = cadence.nextClose(after: start)
-        let edition = Edition(number: number, periodStart: start, periodEnd: end, dateLabel: cadence.dateLabel(start: start, end: end ?? start))
+        let edition = Edition(number: number, name: name.trimmingCharacters(in: .whitespacesAndNewlines))
         context.insert(edition)
+        remember(edition)
         save()
         return edition
     }
 
-    /// Closes the open edition if its period is over.
-    func checkSchedule() {
-        guard context != nil else { return }
-        let edition = openEdition()
-        guard let end = edition.periodEnd, end <= .now else { return }
-        if edition.articles.isEmpty {
-            // Nothing to print: roll the empty edition over to the next period instead.
-            let cadence = Pref.cadence
-            edition.periodStart = .now
-            edition.periodEnd = cadence.nextClose(after: .now)
-            edition.dateLabel = cadence.dateLabel(start: edition.periodStart, end: edition.periodEnd ?? .now)
-            save()
-            return
+    /// Where new links go when no particular edition was chosen: the draft you added
+    /// to last, else the newest draft, else a new edition.
+    func targetEdition(preferring preferred: Edition? = nil) -> Edition {
+        if let preferred, preferred.state == .draft { return preferred }
+        let drafts = fetchAll(Edition.self).filter { $0.state == .draft }
+        if let id = UserDefaults.standard.string(forKey: Self.lastEditionKey).flatMap(UUID.init(uuidString:)),
+           let last = drafts.first(where: { $0.id == id }) {
+            return last
         }
-        close(edition, notify: true)
+        return drafts.max { $0.number < $1.number } ?? createEdition()
     }
 
-    /// Called when the cadence setting changes: the open edition now closes at the new time.
-    func cadenceChanged() {
-        let edition = openEdition()
-        let cadence = Pref.cadence
-        edition.periodEnd = cadence.nextClose(after: .now)
-        edition.dateLabel = cadence.dateLabel(start: edition.periodStart, end: edition.periodEnd ?? .now)
+    func rename(_ edition: Edition, to name: String) {
+        edition.name = name.trimmingCharacters(in: .whitespacesAndNewlines)
         edition.touch()
         save()
-    }
-
-    func close(_ edition: Edition, notify: Bool = false) {
-        guard edition.state == .open else { return }
-        edition.state = .closed
-        edition.closedAt = .now
-        let cadence = Pref.cadence
-        let end = min(edition.periodEnd ?? .now, .now)
-        edition.dateLabel = cadence.dateLabel(start: edition.periodStart, end: max(end, edition.periodStart))
-        // Articles still fetching or broken move on to the next edition.
-        let next = openEdition()
-        for article in edition.articles where !article.isPrintable {
-            move(article, to: next)
-        }
-        edition.touch()
-        save()
-        Task {
-            await render(edition)
-            if notify { await notifyReady(edition) }
-        }
     }
 
     func markPrinted(_ edition: Edition) {
         edition.state = .printed
         edition.printedAt = .now
+        edition.touch()
+        save()
+    }
+
+    func markDraft(_ edition: Edition) {
+        edition.state = .draft
+        edition.printedAt = nil
+        edition.touch()
         save()
     }
 
@@ -120,7 +91,6 @@ final class Library {
         try? FileManager.default.removeItem(at: paths.editionFolder(edition.id))
         context.delete(edition)
         save()
-        _ = openEdition()
     }
 
     func pdfURL(for edition: Edition) -> URL? {
@@ -128,26 +98,94 @@ final class Library {
         return FileManager.default.fileExists(atPath: url.path) && edition.renderedAt != nil ? url : nil
     }
 
+    private func remember(_ edition: Edition) {
+        UserDefaults.standard.set(edition.id.uuidString, forKey: Self.lastEditionKey)
+    }
+
+    // MARK: Cover photo
+
+    /// Looks for another photo online and uses it on the cover, even if a story has one.
+    func findCoverPhoto(for edition: Edition) async {
+        guard let photo = await fetchCoverPhoto(for: edition) else {
+            let alert = NSAlert()
+            alert.messageText = "No photo found"
+            alert.informativeText = "Galley couldn't find a photo for “\(coverQuery(for: edition))”. Try renaming the edition, or choose a photo of your own."
+            alert.runModal()
+            return
+        }
+        apply(photo, to: edition, chosen: true)
+    }
+
+    /// Uses a photo from disk on the cover.
+    func chooseCoverPhoto(for edition: Edition) {
+        let panel = NSOpenPanel()
+        panel.allowedContentTypes = [.image]
+        panel.message = "Choose a photo for the cover of \(edition.displayName)"
+        guard panel.runModal() == .OK, let url = panel.url,
+              let data = try? Data(contentsOf: url)
+        else { return }
+        guard let photo = CoverPhotoFinder.importPhoto(data, into: paths.editionFolder(edition.id)) else { return }
+        apply(photo, to: edition, chosen: true)
+    }
+
+    /// Goes back to the cover story's own photo (or an automatic one if it has none).
+    func useStoryPhoto(for edition: Edition) {
+        removeCoverPhotoFile(of: edition)
+        edition.coverPhotoIsChosen = false
+        edition.touch()
+        save()
+    }
+
+    private func coverQuery(for edition: Edition) -> String {
+        if !edition.name.isEmpty { return edition.name }
+        let cover = edition.printableArticles.first { $0.id == edition.coverArticleID } ?? edition.printableArticles.first
+        return CoverPhotoFinder.keywords(from: cover?.title ?? "")
+    }
+
+    private func fetchCoverPhoto(for edition: Edition) async -> CoverPhoto? {
+        let query = coverQuery(for: edition)
+        let photo = await CoverPhotoFinder().find(query: query, excluding: Set(edition.coverPhotoSeen), into: paths.editionFolder(edition.id))
+        edition.coverPhotoQuery = query
+        return photo
+    }
+
+    private func apply(_ photo: CoverPhoto, to edition: Edition, chosen: Bool) {
+        removeCoverPhotoFile(of: edition)
+        edition.coverPhotoFile = photo.file
+        edition.coverPhotoCredit = photo.credit
+        edition.coverPhotoIsChosen = chosen
+        if let id = photo.sourceID { edition.coverPhotoSeen.append(id) }
+        edition.touch()
+        save()
+    }
+
+    private func removeCoverPhotoFile(of edition: Edition) {
+        if let file = edition.coverPhotoFile {
+            try? FileManager.default.removeItem(at: paths.editionFolder(edition.id).appendingPathComponent(file))
+        }
+        edition.coverPhotoFile = nil
+        edition.coverPhotoCredit = nil
+    }
+
     // MARK: Articles
 
-    /// Adds links to the open edition. Duplicates of articles already in it are skipped.
+    /// Adds links to `edition` (or the usual target). Links already in it are skipped.
     @discardableResult
-    func add(_ urls: [URL]) -> Int {
-        let edition = openEdition()
+    func add(_ urls: [URL], to edition: Edition? = nil) -> Edition {
+        let edition = edition ?? targetEdition()
         let existing = Set(edition.articles.map(\.sourceURL))
         var position = (edition.articles.map(\.position).max() ?? -1) + 1
-        var added = 0
         for url in urls where !existing.contains(url) {
             let article = Article(url: url, position: position)
             position += 1
             context.insert(article)
             article.edition = edition
             enqueue(article)
-            added += 1
         }
         edition.touch()
+        remember(edition)
         save()
-        return added
+        return edition
     }
 
     func retry(_ article: Article) {
@@ -167,6 +205,8 @@ final class Library {
     }
 
     func move(_ article: Article, to edition: Edition) {
+        guard article.edition?.id != edition.id else { return }
+        if article.edition?.coverArticleID == article.id { article.edition?.coverArticleID = nil }
         article.edition?.touch()
         article.position = (edition.articles.map(\.position).max() ?? -1) + 1
         article.edition = edition
@@ -196,7 +236,7 @@ final class Library {
             target = article
         } else {
             guard let url = webView.url else { return }
-            let edition = openEdition()
+            let edition = targetEdition()
             target = Article(url: url, position: (edition.articles.map(\.position).max() ?? -1) + 1)
             context.insert(target)
             target.edition = edition
@@ -277,9 +317,8 @@ final class Library {
 
     private func renderOnce(_ edition: Edition) async {
         renderErrors[edition.id] = nil
-
-        let version = edition.contentVersion
         let settingsKey = Pref.renderKey
+        let settings = Pref.renderSettings
         let articles = edition.printableArticles
         guard !articles.isEmpty else {
             renderErrors[edition.id] = "Add some articles to see the edition."
@@ -290,14 +329,31 @@ final class Library {
             guard let metadata = ArticleExtractor.loadMetadata(in: folder) else { return nil }
             return RenderArticle(id: article.id, metadata: metadata, folder: folder)
         }
-        let document = EditionDocument(
+        var document = EditionDocument(
             masthead: Pref.mastheadName,
             number: edition.number,
-            dateLabel: edition.state == .open ? Pref.cadence.dateLabel(start: edition.periodStart, end: edition.periodEnd ?? .now) : edition.dateLabel,
+            title: edition.name.isEmpty ? nil : edition.name,
+            dateLabel: edition.dateLabel,
             articles: renderArticles,
             coverArticleID: edition.coverArticleID,
-            settings: Pref.renderSettings
+            settings: settings
         )
+
+        // Cover photo: the reader's choice wins. Otherwise, if no story has a picture,
+        // find one online (again if the edition was renamed since).
+        if !edition.coverPhotoIsChosen && settings.imageMode != .none && document.needsCoverPhoto {
+            if edition.coverPhotoFile == nil || edition.coverPhotoQuery != coverQuery(for: edition),
+               let photo = await fetchCoverPhoto(for: edition) {
+                apply(photo, to: edition, chosen: false)
+            }
+        }
+        if let file = edition.coverPhotoFile, edition.coverPhotoIsChosen || document.needsCoverPhoto {
+            document.coverPhoto = paths.editionFolder(edition.id).appendingPathComponent(file)
+            document.coverPhotoCredit = edition.coverPhotoCredit
+        }
+
+        // Read after the cover photo step, which counts as a change to the edition.
+        let version = edition.contentVersion
         do {
             let result = try await renderer.render(document, into: paths.editionFolder(edition.id))
             edition.pageCount = result.pageCount
@@ -309,18 +365,6 @@ final class Library {
         } catch {
             renderErrors[edition.id] = error.localizedDescription
         }
-    }
-
-    // MARK: Notifications
-
-    private func notifyReady(_ edition: Edition) async {
-        let center = UNUserNotificationCenter.current()
-        guard (try? await center.requestAuthorization(options: [.alert, .sound])) == true else { return }
-        let content = UNMutableNotificationContent()
-        content.title = "\(Pref.mastheadName) \(edition.title) is ready to print"
-        let stories = edition.printableArticles.count
-        content.body = "\(stories) \(stories == 1 ? "story" : "stories")" + (edition.pageCount.map { ", \($0) pages" } ?? "")
-        try? await center.add(UNNotificationRequest(identifier: edition.id.uuidString, content: content, trigger: nil))
     }
 
     // MARK: Helpers

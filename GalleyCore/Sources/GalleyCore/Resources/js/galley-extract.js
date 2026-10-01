@@ -5,22 +5,12 @@
 // this file is the body of an async function and its return value is sent back
 // to Swift as a dictionary.
 
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const abs = (u) => {
   try { return new URL(u, document.baseURI).href; } catch (e) { return null; }
 };
 
-// 1. Scroll through the page so lazy-loaded images and sections appear.
-{
-  const step = Math.max(400, window.innerHeight * 0.9);
-  const limit = Math.min(document.documentElement.scrollHeight, 60000);
-  for (let y = 0; y < limit; y += step) {
-    window.scrollTo(0, y);
-    await sleep(80);
-  }
-  window.scrollTo(0, 0);
-  await sleep(150);
-}
+// 1. Galley has already scrolled through the page (from Swift, whose timers
+//    aren't throttled in the hidden window) so lazy-loaded images have appeared.
 
 // 2. Pick a real image source for every <img>: undo lazy-loading placeholders and
 //    choose the largest reasonable candidate from srcset / <picture>.

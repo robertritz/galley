@@ -22,12 +22,27 @@ public final class ArticleExtractor {
         defer { web.close() }
         do {
             try await web.load(url, timeout: pageTimeout)
-            // Give late scripts a moment to put the article on the page.
-            try await Task.sleep(for: .seconds(1))
+            try await scrollThrough(web.webView)
             return try await extractLoadedPage(web.webView, requestedURL: url, articleID: articleID)
         } catch {
             return .failed(reason: error.localizedDescription)
         }
+    }
+
+    /// Scrolls down the page and back so lazy-loaded images and sections load.
+    /// Done from Swift because WebKit throttles timers inside hidden windows.
+    private func scrollThrough(_ webView: WKWebView) async throws {
+        let height = (try? await webView.evaluateJavaScript("document.documentElement.scrollHeight") as? Double) ?? 0
+        let step = 1000.0
+        var y = 0.0
+        while y < min(height, 40000) {
+            _ = try? await webView.evaluateJavaScript("window.scrollTo(0, \(y))")
+            try await Task.sleep(for: .milliseconds(60))
+            y += step
+        }
+        _ = try? await webView.evaluateJavaScript("window.scrollTo(0, 0)")
+        // Give late scripts a moment to put the article and images in place.
+        try await Task.sleep(for: .milliseconds(400))
     }
 
     /// Extracts whatever `webView` is showing right now. Used by the "Fix…" window,

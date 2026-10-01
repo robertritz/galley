@@ -96,14 +96,24 @@ public struct RenderArticle: Sendable, Identifiable {
     }
 }
 
+public enum ColumnLayout: Int, Codable, CaseIterable, Sendable, Identifiable {
+    case one = 1
+    case two = 2
+
+    public var id: Int { rawValue }
+    public var displayName: String { self == .one ? "One column" : "Two columns" }
+}
+
 public struct RenderSettings: Sendable {
     public var paper: PaperSize
+    public var columns: ColumnLayout
     public var imageMode: ImageMode
     public var linkNotes: Bool
     public var themeID: String
 
-    public init(paper: PaperSize = .regionDefault, imageMode: ImageMode = .color, linkNotes: Bool = true, themeID: String = "classic") {
+    public init(paper: PaperSize = .regionDefault, columns: ColumnLayout = .two, imageMode: ImageMode = .color, linkNotes: Bool = true, themeID: String = "classic") {
         self.paper = paper
+        self.columns = columns
         self.imageMode = imageMode
         self.linkNotes = linkNotes
         self.themeID = themeID
@@ -114,18 +124,40 @@ public struct RenderSettings: Sendable {
 public struct EditionDocument: Sendable {
     public var masthead: String
     public var number: Int
+    /// Optional edition name, e.g. "Climate" or "Weekend Reading".
+    public var title: String?
     public var dateLabel: String
     public var articles: [RenderArticle]
     public var coverArticleID: UUID?
+    /// Cover photo chosen for the edition itself (by the reader, or found online when
+    /// no article has a picture). Overrides the cover story's own photo.
+    public var coverPhoto: URL?
+    public var coverPhotoCredit: String?
     public var settings: RenderSettings
 
-    public init(masthead: String, number: Int, dateLabel: String, articles: [RenderArticle], coverArticleID: UUID? = nil, settings: RenderSettings) {
+    public init(masthead: String, number: Int, title: String? = nil, dateLabel: String, articles: [RenderArticle],
+                coverArticleID: UUID? = nil, coverPhoto: URL? = nil, coverPhotoCredit: String? = nil, settings: RenderSettings) {
         self.masthead = masthead
         self.number = number
+        self.title = title
         self.dateLabel = dateLabel
         self.articles = articles
         self.coverArticleID = coverArticleID
+        self.coverPhoto = coverPhoto
+        self.coverPhotoCredit = coverPhotoCredit
         self.settings = settings
+    }
+
+    /// The article the cover leads with: the chosen one, or the first with a photo.
+    public var coverArticle: RenderArticle? {
+        articles.first { $0.id == coverArticleID }
+            ?? articles.first { $0.metadata.leadImageFile != nil }
+            ?? articles.first
+    }
+
+    /// True when no article can supply a cover photo and none was chosen.
+    public var needsCoverPhoto: Bool {
+        coverPhoto == nil && !articles.contains { $0.metadata.leadImageFile != nil }
     }
 }
 

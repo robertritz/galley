@@ -16,10 +16,7 @@ struct EditionHTML {
         let js = paths.jsFolder.absoluteString
 
         let articles = edition.articles
-        // The cover story is the one chosen in the app, or else the first with a picture.
-        let cover = articles.first { $0.id == edition.coverArticleID }
-            ?? articles.first { $0.metadata.leadImageFile != nil }
-            ?? articles.first
+        let cover = edition.coverArticle
 
         return """
         <!doctype html>
@@ -32,15 +29,22 @@ struct EditionHTML {
         <style>\(settingsCSS)</style>
         <script>
         window.PagedConfig = { auto: false };
-        // The render window is invisible, so WebKit never delivers animation frames.
-        // Paged.js schedules its work with them; run those callbacks on timers instead.
-        window.requestAnimationFrame = (cb) => setTimeout(() => cb(performance.now()), 0);
-        window.requestIdleCallback = (cb) => setTimeout(() => cb({ didTimeout: false, timeRemaining: () => 50 }), 0);
+        // The render window is invisible, so WebKit never delivers animation frames
+        // and slows timers to about one a second. Paged.js schedules its work with
+        // frames; run those callbacks through a MessageChannel, which isn't throttled.
+        (() => {
+          const queue = [];
+          const channel = new MessageChannel();
+          channel.port1.onmessage = () => queue.splice(0).forEach((cb) => cb());
+          const soon = (cb) => { queue.push(cb); channel.port2.postMessage(0); return queue.length; };
+          window.requestAnimationFrame = (cb) => soon(() => cb(performance.now()));
+          window.requestIdleCallback = (cb) => soon(() => cb({ didTimeout: false, timeRemaining: () => 50 }));
+        })();
         </script>
         <script src="\(js)paged.polyfill.js"></script>
         <script src="\(js)galley-render.js"></script>
         </head>
-        <body class="images-\(edition.settings.imageMode.rawValue)">
+        <body class="images-\(edition.settings.imageMode.rawValue) columns-\(edition.settings.columns.rawValue)">
         \(coverHTML(cover: cover))
         \(contentsHTML)
         \(articles.map(articleHTML).joined(separator: "\n"))
@@ -50,48 +54,96 @@ struct EditionHTML {
     }
 
     private var runningHead: String {
-        "\(edition.masthead) · No. \(edition.number) · \(edition.dateLabel)"
+        [edition.masthead, "No. \(edition.number)", edition.title, edition.dateLabel]
+            .compactMap { $0 }.filter { !$0.isEmpty }.joined(separator: " · ")
     }
 
     private var settingsCSS: String {
         let paper = edition.settings.paper
         return """
         @page { size: \(paper.cssSize); @top-left { content: "\(cssString(runningHead))"; } }
-        :root { --paper-height: \(paper == .a4 ? "297mm" : "279.4mm"); }
+        :root {
+          --paper-height: \(paper == .a4 ? "297mm" : "279.4mm");
+          --gap: 7mm;
+          --col: \(paper == .a4 ? "81.5mm" : "84.45mm"); /* (paper width − 40mm margins − gap) / 2 */
+        }
         """
     }
 
     // MARK: Cover
 
     private func coverHTML(cover: RenderArticle?) -> String {
-        let others = edition.articles.filter { $0.id != cover?.id }.prefix(4)
-        let image: String
-        if let cover, let lead = cover.metadata.leadImageFile, edition.settings.imageMode != .none {
-            image = #"<div class="cover-image"><img src="\#(fileURL(cover, lead))" alt=""></div>"#
-        } else {
-            image = #"<div class="cover-image cover-image-empty"></div>"#
+        // The photo: one chosen for the edition, else the cover story's own.
+        var photo: (src: String, credit: String?)?
+        if edition.settings.imageMode != .none {
+            if let url = edition.coverPhoto {
+                photo = (url.absoluteString, edition.coverPhotoCredit)
+            } else if let cover, let lead = cover.metadata.leadImageFile {
+                photo = (fileURL(cover, lead), nil)
+            }
         }
+
+        let others = edition.articles.filter { $0.id != cover?.id }.prefix(photo == nil ? 6 : 4)
+        let lines = others.map { a in
+            """
+            <li><a href="#a-\(a.id.uuidString)"><span class="cover-line-title">\(esc(a.metadata.title))</span><span class="cover-line-site">\(esc(a.metadata.siteName ?? ""))</span><span class="cover-page">p. \(pageRef(a))</span></a></li>
+            """
+        }.joined()
+        let count = edition.articles.count
+        let issueLine = [
+            "<span>No. \(edition.number)</span>",
+            edition.title.flatMap { $0.isEmpty ? nil : "<span class=\"issue-title\">\(esc($0))</span>" },
+            "<span>\(esc(edition.dateLabel))</span>",
+            "<span>\(count) \(count == 1 ? "story" : "stories")</span>",
+        ].compactMap { $0 }.joined()
+        let masthead = """
+          <header class="cover-masthead">
+            <h1 class="masthead">\(esc(edition.masthead))</h1>
+            <p class="issue-line">\(issueLine)</p>
+          </header>
+        """
+
+        guard let photo else {
+            // No picture anywhere: a typographic cover that leads with the story itself.
+            let lead = cover.map { a in
+                // Headlines run from three words to three lines; size them to fit.
+                let length = a.metadata.title.count
+                let size = length > 110 ? "cover-title-xl" : length > 70 ? "cover-title-l" : length > 40 ? "cover-title-m" : ""
+                return """
+                <a class="cover-lead" href="#a-\(a.id.uuidString)">
+                  <span class="cover-kicker">\(esc(a.metadata.siteName ?? ""))</span>
+                  <span class="cover-title \(size)">\(esc(a.metadata.title))</span>
+                  \(a.metadata.excerpt.map { "<span class=\"cover-dek\">\(esc(truncate($0, 220)))</span>" } ?? "")
+                  <span class="cover-page">Page \(pageRef(a))</span>
+                </a>
+                """
+            } ?? ""
+            return """
+            <section class="cover cover-typographic">
+              \(masthead)
+              <div class="cover-feature">
+                <span class="cover-numeral">\(edition.number)</span>
+                \(lead)
+              </div>
+              <ul class="cover-lines">\(lines)</ul>
+            </section>
+            """
+        }
+
         let lead = cover.map { a in
             """
             <a class="cover-lead" href="#a-\(a.id.uuidString)">
               <span class="cover-kicker">\(esc(a.metadata.siteName ?? ""))</span>
               <span class="cover-title">\(esc(a.metadata.title))</span>
+              <span class="cover-page">Page \(pageRef(a))</span>
             </a>
             """
         } ?? ""
-        let lines = others.map { a in
-            """
-            <li><a href="#a-\(a.id.uuidString)"><span class="cover-line-title">\(esc(a.metadata.title))</span><span class="cover-line-site">\(esc(a.metadata.siteName ?? ""))</span></a></li>
-            """
-        }.joined()
-        let count = edition.articles.count
+        let credit = photo.credit.map { "<span class=\"cover-credit\">\(esc($0))</span>" } ?? ""
         return """
         <section class="cover">
-          <header class="cover-masthead">
-            <h1 class="masthead">\(esc(edition.masthead))</h1>
-            <p class="issue-line"><span>No. \(edition.number)</span><span>\(esc(edition.dateLabel))</span><span>\(count) \(count == 1 ? "story" : "stories")</span></p>
-          </header>
-          \(image)
+          \(masthead)
+          <div class="cover-image"><img src="\(photo.src)" alt="">\(credit)</div>
           <div class="cover-text">
             \(lead)
             <ul class="cover-lines">\(lines)</ul>
@@ -108,7 +160,7 @@ struct EditionHTML {
             let byline = [m.byline, "\(m.readingMinutes) min"].compactMap { $0 }.joined(separator: " · ")
             return """
             <li>
-              <a class="toc-page" href="#a-\(a.id.uuidString)"></a>
+              <span class="toc-page">\(pageRef(a))</span>
               <div class="toc-entry">
                 <p class="toc-kicker">\(esc(m.siteName ?? ""))</p>
                 <p class="toc-title">\(esc(m.title))</p>
@@ -122,7 +174,7 @@ struct EditionHTML {
         <section class="contents">
           <h2 class="contents-heading">Contents</h2>
           <ol class="toc">\(entries)</ol>
-          <p class="colophon">\(esc(edition.masthead)) No. \(edition.number) was printed with Galley on \(Self.dayFormatter.string(from: Date())).</p>
+          <p class="colophon">\(esc(edition.masthead)) No. \(edition.number)\(edition.title.map { $0.isEmpty ? "" : ", “\(esc($0))”," } ?? "") was printed with Galley on \(Self.dayFormatter.string(from: Date())).</p>
         </section>
         """
     }
@@ -148,7 +200,7 @@ struct EditionHTML {
         let lang = m.language.map { " lang=\"\(esc($0))\"" } ?? ""
 
         return """
-        <article class="story" id="a-\(article.id.uuidString)" data-id="\(article.id.uuidString)"\(lang)>
+        <article class="story" id="a-\(article.id.uuidString)" data-article="\(article.id.uuidString)"\(lang)>
           <header class="opener">
             <p class="kicker">\(esc(m.siteName ?? source.host() ?? ""))</p>
             <h1 class="headline">\(esc(m.title))</h1>
@@ -171,6 +223,11 @@ struct EditionHTML {
     }
 
     // MARK: Helpers
+
+    /// Filled in with the article's first page once the edition is laid out.
+    private func pageRef(_ article: RenderArticle) -> String {
+        #"<span class="page-ref" data-target="\#(article.id.uuidString)">00</span>"#
+    }
 
     private func fileURL(_ article: RenderArticle, _ relative: String) -> String {
         article.folder.appendingPathComponent(relative).absoluteString

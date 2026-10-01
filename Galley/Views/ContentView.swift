@@ -19,10 +19,11 @@ struct ContentView: View {
     @State private var selection: SidebarItem?
     @State private var selectedArticleID: UUID?
     @State private var showingAddLink = false
+    @State private var naming = EditionNaming()
 
     var body: some View {
         NavigationSplitView {
-            SidebarView(selection: $selection)
+            SidebarView(selection: $selection, naming: $naming)
                 .navigationSplitViewColumnWidth(min: 200, ideal: 230, max: 300)
         } content: {
             content
@@ -31,21 +32,25 @@ struct ContentView: View {
             detail
         }
         .sheet(isPresented: $showingAddLink) {
-            AddLinkSheet()
+            AddLinkSheet(target: selectedEdition) { edition in selection = .edition(edition.id) }
+        }
+        .editionNamingAlert($naming) { name in
+            if let edition = naming.editing {
+                library.rename(edition, to: name)
+            } else {
+                let edition = library.createEdition(name: name)
+                selection = .edition(edition.id)
+            }
         }
         .onPasteCommand(of: [.url, .plainText]) { providers in
             Task { await addLinks(from: providers) }
         }
         .dropDestination(for: URL.self) { urls, _ in
-            let web = urls.filter { $0.scheme == "http" || $0.scheme == "https" }
-            guard !web.isEmpty else { return false }
-            library.add(web)
-            selection = .edition(library.openEdition().id)
-            return true
+            addWeb(urls)
         }
         .focusedSceneValue(\.galleyActions, actions)
-        .onAppear(perform: selectOpenEdition)
-        .onChange(of: editions.count, selectOpenEdition)
+        .onAppear(perform: selectAnEdition)
+        .onChange(of: editions.count, selectAnEdition)
         .onChange(of: selection) { selectedArticleID = nil }
         .alert("Galley couldn't start", isPresented: .constant(library.startupError != nil)) {
             Button("Quit") { NSApp.terminate(nil) }
@@ -54,10 +59,13 @@ struct ContentView: View {
         }
     }
 
-    /// Start on the edition that's collecting articles.
-    private func selectOpenEdition() {
-        if selection == nil, let open = editions.first(where: { $0.state == .open }) {
-            selection = .edition(open.id)
+    /// Start on the newest draft edition.
+    private func selectAnEdition() {
+        if let current = selection, case .edition(let id) = current, editions.contains(where: { $0.id == id }) { return }
+        if case .allArticles = selection { return }
+        if case .needsAttention = selection { return }
+        if let edition = editions.first(where: { $0.state == .draft }) ?? editions.first {
+            selection = .edition(edition.id)
         }
     }
 
@@ -70,7 +78,7 @@ struct ContentView: View {
         switch selection {
         case .edition:
             if let edition = selectedEdition {
-                EditionView(edition: edition, selectedArticleID: $selectedArticleID, showingAddLink: $showingAddLink)
+                EditionView(edition: edition, selectedArticleID: $selectedArticleID, showingAddLink: $showingAddLink, naming: $naming)
             } else {
                 ContentUnavailableView("No Edition", systemImage: "newspaper")
             }
@@ -79,7 +87,11 @@ struct ContentView: View {
         case .needsAttention:
             ArticleListView(title: "Needs Attention", articles: articles.filter { $0.status.isProblem }, selectedArticleID: $selectedArticleID)
         case nil:
-            ContentUnavailableView("Select an Edition", systemImage: "newspaper")
+            ContentUnavailableView {
+                Label("No Edition Selected", systemImage: "newspaper")
+            } actions: {
+                Button("New Edition…") { naming = EditionNaming(isPresented: true) }
+            }
         }
     }
 
@@ -98,12 +110,23 @@ struct ContentView: View {
     private var actions: GalleyActions {
         let edition = selectedEdition
         return GalleyActions(
+            newEdition: { naming = EditionNaming(isPresented: true) },
             addLink: { showingAddLink = true },
             openBrowser: { openWindow(id: "browser", value: BrowserRequest()) },
             printEdition: { if let edition { Task { await EditionOutput.print(edition, library: library) } } },
             exportPDF: { if let edition { Task { await EditionOutput.export(edition, library: library) } } },
             canPrint: edition.map { !$0.printableArticles.isEmpty } ?? false
         )
+    }
+
+    /// Links go into the edition on screen, or the usual target if none is.
+    @discardableResult
+    private func addWeb(_ urls: [URL]) -> Bool {
+        let web = urls.filter { $0.scheme == "http" || $0.scheme == "https" }
+        guard !web.isEmpty else { return false }
+        let edition = library.add(web, to: selectedEdition.flatMap { $0.state == .draft ? $0 : nil })
+        selection = .edition(edition.id)
+        return true
     }
 
     private func addLinks(from providers: [NSItemProvider]) async {
@@ -119,10 +142,32 @@ struct ContentView: View {
                 urls.append(contentsOf: LinkParser.urls(in: text))
             }
         }
-        let web = urls.filter { $0.scheme == "http" || $0.scheme == "https" }
-        guard !web.isEmpty else { return }
-        library.add(web)
-        selection = .edition(library.openEdition().id)
+        addWeb(urls)
+    }
+}
+
+/// State for the "New Edition" / "Rename Edition" prompt.
+struct EditionNaming {
+    var isPresented = false
+    /// The edition being renamed; nil when creating a new one.
+    var editing: Edition?
+    var name = ""
+
+    static func rename(_ edition: Edition) -> EditionNaming {
+        EditionNaming(isPresented: true, editing: edition, name: edition.name)
+    }
+}
+
+extension View {
+    func editionNamingAlert(_ naming: Binding<EditionNaming>, onCommit: @escaping (String) -> Void) -> some View {
+        alert(naming.wrappedValue.editing == nil ? "New Edition" : "Rename Edition", isPresented: naming.isPresented) {
+            TextField("Name (optional)", text: naming.name)
+            Button(naming.wrappedValue.editing == nil ? "Create" : "Rename") { onCommit(naming.wrappedValue.name) }
+                .keyboardShortcut(.defaultAction)
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("A topic or a date, like “Climate” or “Weekend Reading”. Leave it empty to use the issue number.")
+        }
     }
 }
 

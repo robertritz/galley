@@ -14,7 +14,7 @@ struct EditionPreview: View {
     @AppStorage(Pref.imageMode) private var imageMode = ImageMode.color.rawValue
     @AppStorage(Pref.linkNotes) private var linkNotes = true
     @AppStorage(Pref.masthead) private var masthead = "Galley"
-    @AppStorage(Pref.cadenceKind) private var cadenceKind = Cadence.Kind.weekly.rawValue
+    @AppStorage(Pref.columns) private var columns = ColumnLayout.two.rawValue
 
     @State private var document: PDFDocument?
     @State private var loadedModified: Date?
@@ -33,7 +33,7 @@ struct EditionPreview: View {
                 ContentUnavailableView("Nothing to Print Yet", systemImage: "doc.richtext",
                                        description: Text(hasPendingFetches ? "Articles are still being fetched." : "Add articles and they'll be laid out here."))
             } else {
-                ProgressView("Laying out \(edition.title)…")
+                ProgressView("Laying out \(edition.displayName)…")
             }
         }
         .overlay(alignment: .top) {
@@ -155,7 +155,7 @@ enum EditionOutput {
         info.rightMargin = 0
         info.jobDisposition = .spool
         guard let operation = document.printOperation(for: info, scalingMode: .pageScaleNone, autoRotate: false) else { return }
-        operation.jobTitle = "\(Pref.mastheadName) \(edition.title)"
+        operation.jobTitle = "\(Pref.mastheadName) – \(edition.displayName)"
         operation.showsPrintPanel = true
         operation.showsProgressPanel = true
         if let window = NSApp.mainWindow {
@@ -169,7 +169,7 @@ enum EditionOutput {
         guard let url = await ensureRendered(edition, library: library) else { return }
         let panel = NSSavePanel()
         panel.allowedContentTypes = [.pdf]
-        panel.nameFieldStringValue = "\(Pref.mastheadName) \(edition.number) – \(edition.dateLabel).pdf"
+        panel.nameFieldStringValue = "\(Pref.mastheadName) \(edition.number)\(edition.name.isEmpty ? "" : " – \(edition.name)").pdf"
             .replacingOccurrences(of: "/", with: "-")
         guard panel.runModal() == .OK, let destination = panel.url else { return }
         try? FileManager.default.removeItem(at: destination)

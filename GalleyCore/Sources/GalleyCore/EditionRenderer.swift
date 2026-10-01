@@ -19,9 +19,18 @@ public final class EditionRenderer {
         let htmlURL = folder.appendingPathComponent("edition.html")
         try EditionHTML(edition: edition, paths: paths).build().write(to: htmlURL, atomically: true, encoding: .utf8)
 
+        let clock = ContinuousClock()
+        var mark = clock.now
+        func lap(_ label: String) {
+            if ProcessInfo.processInfo.environment["GALLEY_DEBUG"] != nil {
+                print("render: \(label) \(clock.now - mark)")
+            }
+            mark = clock.now
+        }
         let web = OffscreenWebView(size: CGSize(width: 900, height: 1200), dataStore: .nonPersistent())
         defer { web.close() }
         try await web.loadFile(htmlURL, readAccess: paths.root, timeout: 30)
+        lap("load")
 
         let raw: Any?
         do {
@@ -37,6 +46,7 @@ public final class EditionRenderer {
             let line = info["WKJavaScriptExceptionLineNumber"].map { " (line \($0))" } ?? ""
             throw GalleyError("Laying out the edition failed: \(message)\(line)")
         }
+        lap("paginate (Paged.js \((raw as? [String: Any])?["pagedMs"] ?? "?") ms)")
         guard let result = raw as? [String: Any],
               let rects = result["rects"] as? [[String: Double]],
               !rects.isEmpty
@@ -55,12 +65,11 @@ public final class EditionRenderer {
             pages.append(try await web.webView.pdf(configuration: config))
         }
 
+        lap("capture \(pages.count) pages")
         let pdfURL = folder.appendingPathComponent("edition.pdf")
         try PDFAssembler.join(pages, paper: edition.settings.paper, to: pdfURL)
+        lap("assemble")
 
-        if ProcessInfo.processInfo.environment["GALLEY_DEBUG"] != nil {
-            print("galleyRender:", result.filter { $0.key != "rects" })
-        }
         var starts: [UUID: Int] = [:]
         for (key, value) in result["starts"] as? [String: Int] ?? [:] {
             let raw = key.hasPrefix("a-") ? String(key.dropFirst(2)) : key

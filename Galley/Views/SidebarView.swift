@@ -4,6 +4,7 @@ import SwiftUI
 
 struct SidebarView: View {
     @Binding var selection: SidebarItem?
+    @Binding var naming: EditionNaming
     @Environment(Library.self) private var library
     @Environment(\.openWindow) private var openWindow
     @Query(sort: \Edition.number, order: .reverse) private var editions: [Edition]
@@ -11,39 +12,17 @@ struct SidebarView: View {
 
     var body: some View {
         List(selection: $selection) {
-            Section("Next Edition") {
-                ForEach(editions.filter { $0.state == .open }) { edition in
-                    VStack(alignment: .leading, spacing: 2) {
-                        Label(edition.title, systemImage: "tray.full")
-                        Text(closesText(edition))
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                            .padding(.leading, 26)
-                    }
-                    .badge(edition.articles.count)
-                    .tag(SidebarItem.edition(edition.id))
+            Section("Editions") {
+                ForEach(editions.filter { $0.state == .draft }) { edition in
+                    row(edition)
                 }
             }
 
-            let past = editions.filter { $0.state != .open }
-            if !past.isEmpty {
-                Section("Editions") {
-                    ForEach(past) { edition in
-                        Label {
-                            VStack(alignment: .leading, spacing: 1) {
-                                Text(edition.title)
-                                Text(edition.dateLabel).font(.caption).foregroundStyle(.secondary)
-                            }
-                        } icon: {
-                            Image(systemName: edition.state == .printed ? "checkmark.circle" : "newspaper")
-                        }
-                        .tag(SidebarItem.edition(edition.id))
-                        .contextMenu {
-                            if edition.state == .closed {
-                                Button("Mark as Printed") { library.markPrinted(edition) }
-                            }
-                            Button("Delete Edition…", role: .destructive) { confirmDelete(edition) }
-                        }
+            let printed = editions.filter { $0.state == .printed }
+            if !printed.isEmpty {
+                Section("Printed") {
+                    ForEach(printed) { edition in
+                        row(edition)
                     }
                 }
             }
@@ -60,27 +39,75 @@ struct SidebarView: View {
         }
         .listStyle(.sidebar)
         .safeAreaInset(edge: .bottom) {
-            Button {
-                openWindow(id: "browser", value: BrowserRequest())
-            } label: {
-                Label("Sign in to Sites…", systemImage: "person.badge.key")
-                    .frame(maxWidth: .infinity, alignment: .leading)
+            HStack {
+                Button {
+                    naming = EditionNaming(isPresented: true)
+                } label: {
+                    Label("New Edition", systemImage: "plus")
+                }
+                .help("Make a new edition (⌘N)")
+                Spacer()
+                Button {
+                    openWindow(id: "browser", value: BrowserRequest())
+                } label: {
+                    Image(systemName: "person.badge.key")
+                }
+                .help("Sign in to sites you subscribe to")
             }
             .buttonStyle(.borderless)
             .padding(10)
-            .help("Open Galley's browser to sign in to sites you subscribe to")
         }
     }
 
-    private func closesText(_ edition: Edition) -> String {
-        guard let end = edition.periodEnd else { return "Closes when you close it" }
-        return "Closes " + end.formatted(.relative(presentation: .named))
+    private func row(_ edition: Edition) -> some View {
+        Label {
+            VStack(alignment: .leading, spacing: 1) {
+                Text(edition.displayName).lineLimit(1)
+                Text(subtitle(edition)).font(.caption).foregroundStyle(.secondary)
+            }
+        } icon: {
+            Image(systemName: edition.state == .printed ? "checkmark.circle" : "newspaper")
+        }
+        .badge(edition.articles.count)
+        .tag(SidebarItem.edition(edition.id))
+        .dropDestination(for: URL.self) { urls, _ in
+            // Drop links from a browser straight onto an edition.
+            let web = urls.filter { $0.scheme == "http" || $0.scheme == "https" }
+            guard !web.isEmpty else { return false }
+            library.add(web, to: edition)
+            return true
+        }
+        .contextMenu {
+            Button("Rename…") { naming = .rename(edition) }
+            if edition.state == .draft {
+                Button("Mark as Printed") { library.markPrinted(edition) }
+            } else {
+                Button("Move Back to Editions") { library.markDraft(edition) }
+            }
+            Divider()
+            Button("Delete Edition…", role: .destructive) { confirmDelete(edition) }
+        }
+    }
+
+    private func subtitle(_ edition: Edition) -> String {
+        var parts: [String] = []
+        if !edition.name.isEmpty { parts.append("No. \(edition.number)") }
+        if let printed = edition.printedAt {
+            parts.append(printed.formatted(date: .abbreviated, time: .omitted))
+        } else if let pages = edition.pageCount, !edition.articles.isEmpty {
+            parts.append("\(pages) pages")
+        } else if edition.articles.isEmpty {
+            parts.append("Empty")
+        }
+        return parts.joined(separator: " · ")
     }
 
     private func confirmDelete(_ edition: Edition) {
         let alert = NSAlert()
-        alert.messageText = "Delete \(edition.title)?"
-        alert.informativeText = "Its \(edition.articles.count) articles and the PDF will be removed. This can't be undone."
+        alert.messageText = "Delete \(edition.displayName)?"
+        alert.informativeText = edition.articles.isEmpty
+            ? "This can't be undone."
+            : "Its \(edition.articles.count) articles and the PDF will be removed. This can't be undone."
         alert.addButton(withTitle: "Delete")
         alert.addButton(withTitle: "Cancel")
         alert.buttons.first?.hasDestructiveAction = true

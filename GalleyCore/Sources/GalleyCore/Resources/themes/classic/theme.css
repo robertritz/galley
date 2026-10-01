@@ -135,7 +135,7 @@ body { margin: 0; }
   padding-top: 6mm;
 }
 
-.cover-text a { color: inherit; text-decoration: none; }
+.cover a { color: inherit; text-decoration: none; }
 
 .cover-kicker, .cover-line-site {
   display: block;
@@ -156,8 +156,7 @@ body { margin: 0; }
   margin-top: 1.5mm;
 }
 
-.cover-lead::after {
-  content: "Page " target-counter(attr(href), page);
+.cover-page {
   display: block;
   margin-top: 2mm;
   font-family: var(--sans);
@@ -180,8 +179,9 @@ body { margin: 0; }
   line-height: 1.2;
 }
 .cover-line-site { color: var(--muted); margin-top: 0.8mm; font-size: 6.5pt; }
-.cover-lines a::after {
-  content: "p. " target-counter(attr(href), page);
+.cover-lines .cover-page {
+  display: inline;
+  margin-top: 0;
   font-family: var(--sans);
   font-size: 6.5pt;
   color: var(--muted);
@@ -227,7 +227,6 @@ body { margin: 0; }
   line-height: 1;
   text-align: right;
 }
-.toc-page::after { content: target-counter(attr(href), page); }
 .toc-entry p { margin: 0; }
 .toc-kicker {
   font-family: var(--sans);
@@ -329,9 +328,7 @@ body { margin: 0; }
 /* Paged.js marks an element that continues on the next page so its last line is
    justified. On .body that would be inherited by every paragraph; reset it on
    everything that isn't itself split. */
-.body p:not([data-align-last-split-element]),
-.body li:not([data-align-last-split-element]),
-.body blockquote:not([data-align-last-split-element]) { text-align-last: auto; }
+.body :not([data-align-last-split-element]) { text-align-last: auto; }
 .body p + p { text-indent: 1.3em; }
 .body h2 + p,
 .body h3 + p,
@@ -513,3 +510,114 @@ img.qr {
 .images-none .body figure,
 .images-none .body img,
 .images-none .opener .lead { display: none !important; }
+
+/* ---------- Edition name and photo credit on the cover ---------- */
+
+.issue-line .issue-title {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 500;
+  font-size: 9.5pt;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.cover-credit {
+  position: absolute;
+  right: 2mm;
+  bottom: 1.5mm;
+  font-family: var(--sans);
+  font-size: 5.5pt;
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow: 0 0 2px rgba(0, 0, 0, 0.8);
+}
+
+/* ---------- Typographic cover (no photo available) ---------- */
+
+.cover-typographic .cover-feature {
+  flex: 1 1 auto;
+  min-height: 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  border-bottom: 0.6pt solid var(--rule);
+  margin-bottom: 7mm;
+  padding: 0 0 10mm;
+  overflow: hidden;
+}
+.cover-typographic .cover-numeral {
+  position: absolute;
+  top: -6mm;
+  right: -2mm;
+  font-family: var(--serif);
+  font-size: 260pt;
+  font-weight: 200;
+  line-height: 1;
+  letter-spacing: -0.06em;
+  color: var(--accent);
+  opacity: 0.14;
+  font-variation-settings: "opsz" 60;
+}
+.cover-typographic .cover-lead { position: relative; }
+.cover-typographic .cover-kicker { font-size: 9pt; }
+.cover-typographic .cover-title {
+  font-size: 54pt;
+  line-height: 1.02;
+  letter-spacing: -0.025em;
+  margin-top: 4mm;
+  font-variation-settings: "opsz" 60;
+}
+.cover-typographic .cover-title-m { font-size: 42pt; }
+.cover-typographic .cover-title-l { font-size: 33pt; }
+.cover-typographic .cover-title-xl { font-size: 26pt; }
+.cover-typographic .cover-dek {
+  display: block;
+  margin-top: 6mm;
+  font-size: 15pt;
+  font-style: italic;
+  line-height: 1.3;
+  color: #333;
+  max-width: 85%;
+}
+.cover-typographic .cover-page { font-size: 9pt; margin-top: 6mm; }
+.cover-typographic .cover-lines {
+  flex: 0 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 8mm;
+  border-left: none;
+  padding-left: 0;
+}
+.cover-typographic .cover-lines li {
+  border-top: 1.2pt solid var(--ink);
+  padding-top: 2mm;
+}
+
+/* ---------- Two columns ----------
+   Text is set in a strip one column wide; galley-render.js moves every second
+   page of an article into the right-hand column. --col and --gap are set per
+   paper size by the app. */
+
+.columns-2 .opener { padding: 0; }
+.columns-2 .headline { font-size: 32pt; max-width: 88%; }
+.columns-2 .dek { max-width: 80%; }
+.columns-2 .opener .lead { margin: 6mm 0 0; }
+.columns-2 .opener .lead img { max-height: 110mm; }
+
+.columns-2 .body {
+  padding: 0;
+  width: var(--col);
+  font-size: 9.6pt;
+  line-height: 1.42;
+}
+.columns-2 .body figure,
+.columns-2 .body > img,
+.columns-2 .body p > img:only-child { margin: 3.5mm 0; }
+.columns-2 .body img { max-height: 95mm; }
+.columns-2 .body .first-paragraph::first-letter { font-size: 3.7em; }
+.columns-2 .body h2, .columns-2 .body h3, .columns-2 .body h4 { margin-top: 4mm; }
+.columns-2 .body table { font-size: 6.8pt; }
+.columns-2 .body pre { font-size: 7pt; }
+.columns-2 .source { margin: 8mm 0 0; width: var(--col); }
+.columns-2 .notes { columns: 1; }

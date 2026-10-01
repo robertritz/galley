@@ -5,7 +5,7 @@ import WebKit
 struct SettingsView: View {
     var body: some View {
         TabView {
-            Tab("Edition", systemImage: "newspaper") { EditionSettings() }
+            Tab("General", systemImage: "newspaper") { GeneralSettings() }
             Tab("Printing", systemImage: "printer") { PrintingSettings() }
             Tab("Library", systemImage: "books.vertical") { LibrarySettings() }
         }
@@ -14,12 +14,8 @@ struct SettingsView: View {
     }
 }
 
-private struct EditionSettings: View {
-    @Environment(Library.self) private var library
+private struct GeneralSettings: View {
     @AppStorage(Pref.masthead) private var masthead = "Galley"
-    @AppStorage(Pref.cadenceKind) private var kind = Cadence.Kind.weekly.rawValue
-    @AppStorage(Pref.cadenceWeekday) private var weekday = 1
-    @AppStorage(Pref.cadenceMonthDay) private var monthDay = 1
 
     var body: some View {
         Form {
@@ -27,48 +23,13 @@ private struct EditionSettings: View {
             Text("Printed as the masthead on the cover of every edition.")
                 .font(.caption)
                 .foregroundStyle(.secondary)
-
-            Picker("New edition:", selection: $kind) {
-                ForEach(Cadence.Kind.allCases) { Text($0.displayName).tag($0.rawValue) }
-            }
-            .pickerStyle(.segmented)
-
-            switch Cadence.Kind(rawValue: kind) ?? .weekly {
-            case .weekly:
-                Picker("Closes on:", selection: $weekday) {
-                    ForEach(1...7, id: \.self) { Text(Calendar.current.weekdaySymbols[$0 - 1]).tag($0) }
-                }
-            case .monthly:
-                Picker("Closes on day:", selection: $monthDay) {
-                    ForEach(1...28, id: \.self) { Text("\($0)").tag($0) }
-                }
-            case .daily, .manual:
-                EmptyView()
-            }
-            Text(explanation)
-                .font(.caption)
-                .foregroundStyle(.secondary)
-                .fixedSize(horizontal: false, vertical: true)
-        }
-        .onChange(of: kind) { library.cadenceChanged() }
-        .onChange(of: weekday) { library.cadenceChanged() }
-        .onChange(of: monthDay) { library.cadenceChanged() }
-    }
-
-    private var explanation: String {
-        let cadence = Pref.cadence
-        switch cadence {
-        case .manual:
-            return "The edition stays open until you press Close Edition."
-        default:
-            let next = cadence.nextClose(after: .now).map { $0.formatted(date: .complete, time: .omitted) } ?? ""
-            return "At midnight the current edition closes, is laid out, and Galley lets you know it's ready to print. Next: \(next)."
         }
     }
 }
 
 private struct PrintingSettings: View {
     @AppStorage(Pref.paper) private var paper = PaperSize.regionDefault.rawValue
+    @AppStorage(Pref.columns) private var columns = ColumnLayout.two.rawValue
     @AppStorage(Pref.imageMode) private var imageMode = ImageMode.color.rawValue
     @AppStorage(Pref.linkNotes) private var linkNotes = true
 
@@ -80,6 +41,11 @@ private struct PrintingSettings: View {
             Text("Editions print on one side of the page.")
                 .font(.caption)
                 .foregroundStyle(.secondary)
+
+            Picker("Layout:", selection: $columns) {
+                ForEach(ColumnLayout.allCases) { Text($0.displayName).tag($0.rawValue) }
+            }
+            .pickerStyle(.radioGroup)
 
             Picker("Images:", selection: $imageMode) {
                 ForEach(ImageMode.allCases) { Text($0.displayName).tag($0.rawValue) }
