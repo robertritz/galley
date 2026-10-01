@@ -32,3 +32,12 @@ To do it by hand instead: bump `MARKETING_VERSION` and `CURRENT_PROJECT_VERSION`
 
 `SKIP_NOTARIZE=1 scripts/release.sh` makes a signed DMG without notarising, which is
 handy for checking the build quickly. Other Macs will warn about it.
+
+## The website
+
+[galley.robertritz.com](https://galley.robertritz.com) is a Micro.blog single-page
+website. Its whole page is the theme template `layouts/index.html`, built from
+`site/index.html` with `site/build.sh`; images load from `site/img/` in this repo via
+jsDelivr. The download button points at `releases/latest/download/Galley.dmg`, so new
+releases don't need a site change. If the page text changes (say, the version line),
+rebuild and paste `site/build/index.html` into the template.
