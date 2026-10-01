@@ -1,3 +1,5 @@
+<p align="center"><img src="design/icon-1024.png" width="128" alt="Galley icon"></p>
+
 # Galley
 
 **Print your reading list as a magazine.**
