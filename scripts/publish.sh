@@ -15,6 +15,9 @@ cd "$ROOT"
 [[ -z "$(git status --porcelain)" ]] || { echo "Commit or stash your changes first."; exit 1; }
 git rev-parse -q --verify "refs/tags/v$VERSION" >/dev/null && { echo "v$VERSION already exists."; exit 1; }
 
+# If anything fails before the release commit, put the version back.
+trap 'echo "Failed; restoring project.yml"; git checkout -- project.yml Galley.xcodeproj; exit 1' ERR
+
 # Bump the marketing version and the build number.
 BUILD=$(( $(grep -m1 'CURRENT_PROJECT_VERSION:' project.yml | awk '{print $2}') + 1 ))
 sed -i '' -E "s/^(    MARKETING_VERSION: ).*/\1$VERSION/; s/^(    CURRENT_PROJECT_VERSION: ).*/\1$BUILD/" project.yml
@@ -22,8 +25,9 @@ echo "==> Version $VERSION (build $BUILD)"
 
 scripts/release.sh
 
-git add project.yml
+git add project.yml Galley.xcodeproj
 git commit -q -m "Galley $VERSION"
+trap - ERR
 git tag "v$VERSION"
 git push -q origin HEAD "v$VERSION"
 
