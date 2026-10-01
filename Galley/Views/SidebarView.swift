@@ -4,10 +4,12 @@ import SwiftUI
 
 struct SidebarView: View {
     @Binding var selection: SidebarItem?
-    @Binding var naming: EditionNaming
+    @Binding var renamingID: UUID?
     @Environment(Library.self) private var library
     @Query(sort: \Edition.number, order: .reverse) private var editions: [Edition]
     @Query private var articles: [Article]
+    @State private var draftName = ""
+    @FocusState private var nameFieldFocused: Bool
 
     var body: some View {
         List(selection: $selection) {
@@ -37,9 +39,17 @@ struct SidebarView: View {
             }
         }
         .listStyle(.sidebar)
+        // Return on a selected edition renames it, as in Finder.
+        .onKeyPress(.return) {
+            guard renamingID == nil, case .edition(let id) = selection else { return .ignored }
+            renamingID = id
+            return .handled
+        }
         .safeAreaInset(edge: .bottom) {
             Button {
-                naming = EditionNaming(isPresented: true)
+                let edition = library.createEdition()
+                selection = .edition(edition.id)
+                renamingID = edition.id
             } label: {
                 Label("New Edition", systemImage: "plus")
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -55,7 +65,11 @@ struct SidebarView: View {
         HStack(spacing: 8) {
             SidebarIcon(systemName: edition.state == .printed ? "checkmark.circle" : "doc.text.image")
             VStack(alignment: .leading, spacing: 1) {
-                Text(edition.displayName).lineLimit(1)
+                if renamingID == edition.id {
+                    nameField(edition)
+                } else {
+                    Text(edition.displayName).lineLimit(1)
+                }
                 Text(subtitle(edition)).font(.caption).foregroundStyle(.secondary).lineLimit(1)
             }
         }
@@ -70,7 +84,7 @@ struct SidebarView: View {
             return true
         }
         .contextMenu {
-            Button("Rename…") { naming = .rename(edition) }
+            Button("Rename") { renamingID = edition.id }
             if edition.state == .draft {
                 Button("Mark as Printed") { library.markPrinted(edition) }
             } else {
@@ -79,6 +93,28 @@ struct SidebarView: View {
             Divider()
             Button("Delete Edition…", role: .destructive) { confirmDelete(edition) }
         }
+    }
+
+    /// Inline name editor. Return or clicking away saves; Escape cancels.
+    private func nameField(_ edition: Edition) -> some View {
+        TextField("No. \(edition.number)", text: $draftName)
+            .textFieldStyle(.plain)
+            .focused($nameFieldFocused)
+            .onSubmit { commitRename(edition) }
+            .onExitCommand { renamingID = nil }
+            .onAppear {
+                draftName = edition.name
+                Task { nameFieldFocused = true }
+            }
+            .onChange(of: nameFieldFocused) { _, focused in
+                if !focused { commitRename(edition) }
+            }
+    }
+
+    private func commitRename(_ edition: Edition) {
+        guard renamingID == edition.id else { return }
+        if draftName != edition.name { library.rename(edition, to: draftName) }
+        renamingID = nil
     }
 
     private func subtitle(_ edition: Edition) -> String {

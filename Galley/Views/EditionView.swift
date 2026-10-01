@@ -7,7 +7,7 @@ struct EditionView: View {
     @Bindable var edition: Edition
     @Binding var selectedArticleID: UUID?
     @Binding var showingAddLink: Bool
-    @Binding var naming: EditionNaming
+    @Binding var renamingID: UUID?
     @Environment(Library.self) private var library
     @Environment(\.openWindow) private var openWindow
     @Query(sort: \Edition.number, order: .reverse) private var editions: [Edition]
@@ -43,7 +43,7 @@ struct EditionView: View {
                 Button { showingAddLink = true } label: { Label("Add Link", systemImage: "plus") }
                     .help("Add links to this edition (⌘L)")
                 Menu {
-                    Button("Rename…") { naming = .rename(edition) }
+                    Button("Rename") { renamingID = edition.id }
                     Divider()
                     Section("Cover Photo") {
                         Button("Find a Photo Online") { Task { await library.findCoverPhoto(for: edition) } }
