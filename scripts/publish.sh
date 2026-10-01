@@ -28,4 +28,7 @@ git tag "v$VERSION"
 git push -q origin HEAD "v$VERSION"
 
 if [[ -f "$NOTES" ]]; then NOTES_ARGS=(--notes-file "$NOTES"); else NOTES_ARGS=(--notes "$NOTES"); fi
-gh release create "v$VERSION" "dist/Galley-$VERSION.dmg" --title "Galley $VERSION" "${NOTES_ARGS[@]}"
+# Also attach it as plain "Galley.dmg", so .../releases/latest/download/Galley.dmg
+# (the website's download button) always gets the newest version.
+cp "dist/Galley-$VERSION.dmg" "dist/Galley.dmg"
+gh release create "v$VERSION" "dist/Galley-$VERSION.dmg" "dist/Galley.dmg" --title "Galley $VERSION" "${NOTES_ARGS[@]}"
