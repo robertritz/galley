@@ -25,6 +25,8 @@ final class Library {
     private let maxConcurrentFetches = 3
 
     private static let lastEditionKey = "lastEditionID"
+    /// Links that arrived (from the Share extension) before the library was ready.
+    private var pendingOpenURLs: [URL] = []
 
     func start(context: ModelContext) {
         guard self.context == nil else { return }
@@ -40,6 +42,32 @@ final class Library {
         }
         if fetchAll(Edition.self).isEmpty { _ = createEdition() }
         save()
+        for url in pendingOpenURLs { _ = handle(url) }
+        pendingOpenURLs = []
+    }
+
+    // MARK: galley:// links
+
+    /// Handles `galley://add?url=…&url=…[&edition=Name]`, sent by the Share extension
+    /// and usable from Shortcuts or a bookmarklet. Returns the edition the links went to.
+    @discardableResult
+    func handle(_ url: URL) -> Edition? {
+        guard context != nil else {
+            pendingOpenURLs.append(url)
+            return nil
+        }
+        guard url.host() == "add",
+              let items = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems
+        else { return nil }
+        let links = items.filter { $0.name == "url" }.compactMap { $0.value.flatMap(URL.init(string:)) }
+            .filter { $0.scheme == "http" || $0.scheme == "https" }
+        guard !links.isEmpty else { return nil }
+        var edition: Edition?
+        if let name = items.first(where: { $0.name == "edition" })?.value?.trimmingCharacters(in: .whitespaces), !name.isEmpty {
+            edition = fetchAll(Edition.self).first { $0.state == .draft && $0.name.localizedCaseInsensitiveCompare(name) == .orderedSame }
+                ?? createEdition(name: name)
+        }
+        return add(links, to: edition)
     }
 
     // MARK: Editions
@@ -211,6 +239,27 @@ final class Library {
         article.position = (edition.articles.map(\.position).max() ?? -1) + 1
         article.edition = edition
         edition.touch()
+        save()
+    }
+
+    /// Saves an article after parts were left out in the editor.
+    func saveEdits(to article: Article, _ edits: ArticleEdits) {
+        let folder = paths.articleFolder(article.id)
+        guard (try? edits.html.write(to: folder.appendingPathComponent("article.html"), atomically: true, encoding: .utf8)) != nil,
+              var metadata = ArticleExtractor.loadMetadata(in: folder)
+        else { return }
+        metadata.wordCount = edits.wordCount
+        if metadata.bodyHasImages {
+            metadata.bodyHasImages = !edits.images.isEmpty
+            // If the lead photo was one of the article's pictures and it's gone, use the next.
+            if let lead = metadata.leadImageFile, !edits.images.contains(lead), lead.hasPrefix("images/0") {
+                metadata.leadImageFile = edits.images.first
+                metadata.leadImageIsTextHeavy = nil
+            }
+        }
+        try? ArticleExtractor.writeMetadata(metadata, in: folder)
+        if let checked = ArticleExtractor.loadMetadata(in: folder) { article.apply(checked) }
+        article.edition?.touch()
         save()
     }
 

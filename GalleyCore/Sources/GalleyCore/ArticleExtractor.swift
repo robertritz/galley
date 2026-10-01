@@ -110,12 +110,10 @@ public final class ArticleExtractor {
             wordCount: wordCount,
             leadImageFile: leadFile,
             bodyHasImages: !saved.isEmpty,
+            leadImageIsTextHeavy: leadFile.map { ImageText.isTextHeavy(folder.appendingPathComponent($0)) },
             extractedAt: Date()
         )
-        let encoder = JSONEncoder()
-        encoder.dateEncodingStrategy = .iso8601
-        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
-        try encoder.encode(metadata).write(to: folder.appendingPathComponent("meta.json"))
+        try Self.writeMetadata(metadata, in: folder)
 
         if paywalled && wordCount < 450 {
             return .needsLogin(metadata, reason: "Only the start of the article is visible. Sign in to \(pageURL.host() ?? "the site") inside Galley.")
@@ -126,11 +124,25 @@ public final class ArticleExtractor {
         return .ready(metadata)
     }
 
+    /// Reads `meta.json`. Articles saved by earlier versions get their lead image
+    /// checked for text here, once, and the result saved.
     nonisolated public static func loadMetadata(in folder: URL) -> ArticleMetadata? {
         guard let data = try? Data(contentsOf: folder.appendingPathComponent("meta.json")) else { return nil }
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .iso8601
-        return try? decoder.decode(ArticleMetadata.self, from: data)
+        guard var metadata = try? decoder.decode(ArticleMetadata.self, from: data) else { return nil }
+        if metadata.leadImageIsTextHeavy == nil, let lead = metadata.leadImageFile {
+            metadata.leadImageIsTextHeavy = ImageText.isTextHeavy(folder.appendingPathComponent(lead))
+            try? writeMetadata(metadata, in: folder)
+        }
+        return metadata
+    }
+
+    nonisolated public static func writeMetadata(_ metadata: ArticleMetadata, in folder: URL) throws {
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+        try encoder.encode(metadata).write(to: folder.appendingPathComponent("meta.json"))
     }
 
     nonisolated static func parseDate(_ string: String) -> Date? {

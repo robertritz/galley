@@ -355,7 +355,7 @@ Each milestone ends with something you can use.
 - Fix… capture, paywall detection, and the Needs-attention flow.
 - **Done when**: articles from a site you subscribe to extract in full after you sign in once.
 
-### M5 — Getting links in easily
+### M5 — Getting links in easily (share extension ✅)
 - The share extension and the Safari extension ("Send to Galley").
 - Importing a list of URLs from a text or CSV file.
 

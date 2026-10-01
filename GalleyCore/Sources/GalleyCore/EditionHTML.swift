@@ -78,7 +78,7 @@ struct EditionHTML {
         if edition.settings.imageMode != .none {
             if let url = edition.coverPhoto {
                 photo = (url.absoluteString, edition.coverPhotoCredit)
-            } else if let cover, let lead = cover.metadata.leadImageFile {
+            } else if let cover, let lead = cover.metadata.leadPhotoFile {
                 photo = (fileURL(cover, lead), nil)
             }
         }
@@ -193,7 +193,7 @@ struct EditionHTML {
         bylineParts.append("\(m.readingMinutes) min read")
 
         var lead = ""
-        if !m.bodyHasImages, let file = m.leadImageFile {
+        if !m.bodyHasImages, let file = m.leadPhotoFile {
             lead = #"<figure class="lead"><img src="\#(fileURL(article, file))" alt=""></figure>"#
         }
         let source = m.canonicalURL ?? m.sourceURL

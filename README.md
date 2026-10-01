@@ -22,9 +22,14 @@ wherever you live.
 - **Editions are folders.** Make one whenever you like (⌘N), name it ("Climate",
   "Weekend Reading"), and add links to it. Move articles between editions, and mark an
   edition printed when you've printed it.
-- **Magazine layout.** Two columns (or one), a cover, a contents page, page numbers
+- **Magazine layout.** Two columns (or one) that even out on each article's last page, a cover, a contents page, page numbers
   and running headers, drop caps, captions, and links turned into numbered notes. Each
   article ends with a QR code back to the original.
+- **Share → Galley.** Send links from Safari, Chrome or any app with a Share menu. They go
+  into the edition you added to last. Shortcuts and bookmarklets can use
+  `galley://add?url=…&edition=Name` too.
+- **No surprises.** Double-click an article to see exactly what was extracted, and click
+  any paragraph or picture to leave it out of the printout.
 - **Always a cover.** The cover uses the lead story's photo. If no story has one, Galley
   finds an openly licensed photo on [Openverse](https://openverse.org) to match the edition's
   name and prints the credit. You can also choose your own. Offline, it sets a text-only cover.
@@ -62,6 +67,10 @@ swift run galley-cli https://example.com/some-article --paper a4 --columns 2 --t
 Set `GALLEY_ROOT=/some/folder` to keep test files out of your real library. If your
 checkout is in an iCloud Drive folder (Desktop or Documents with iCloud sync on), build
 with `--scratch-path` somewhere outside it; iCloud's file attributes break code signing.
+
+## Releasing
+
+See [RELEASING.md](RELEASING.md). `scripts/release.sh` builds a signed, notarised DMG.
 
 ## How it works
 

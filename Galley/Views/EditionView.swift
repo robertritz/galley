@@ -11,6 +11,7 @@ struct EditionView: View {
     @Environment(Library.self) private var library
     @Environment(\.openWindow) private var openWindow
     @Query(sort: \Edition.number, order: .reverse) private var editions: [Edition]
+    @State private var editingArticle: Article?
 
     var body: some View {
         List(selection: $selectedArticleID) {
@@ -18,13 +19,21 @@ struct EditionView: View {
                 ForEach(edition.orderedArticles) { article in
                     ArticleRow(article: article, isCover: isCover(article))
                         .tag(article.id)
-                        .contextMenu { menu(for: article) }
                 }
                 .onMove { library.reorder(edition, from: $0, to: $1) }
             } header: {
                 header
             }
         }
+        // Right-click for actions; double-click to see and trim what will print.
+        .contextMenu(forSelectionType: UUID.self) { ids in
+            if let id = ids.first, let article = edition.articles.first(where: { $0.id == id }) {
+                menu(for: article)
+            }
+        } primaryAction: { ids in
+            editingArticle = ids.first.flatMap { id in edition.articles.first { $0.id == id && $0.isPrintable } }
+        }
+        .sheet(item: $editingArticle) { ArticleEditor(article: $0) }
         .overlay {
             if edition.articles.isEmpty {
                 ContentUnavailableView {
@@ -88,6 +97,8 @@ struct EditionView: View {
     }
 
     @ViewBuilder private func menu(for article: Article) -> some View {
+        Button("Edit Article…") { editingArticle = article }
+            .disabled(!article.isPrintable)
         Button("Use as Cover Story") { library.makeCover(article) }
             .disabled(!article.isPrintable)
         Button("Open Original") { NSWorkspace.shared.open(article.sourceURL) }
@@ -203,11 +214,15 @@ struct ArticleListView: View {
     @Environment(Library.self) private var library
     @Environment(\.openWindow) private var openWindow
 
+    @State private var editingArticle: Article?
+
     var body: some View {
         List(articles, selection: $selectedArticleID) { article in
             ArticleRow(article: article, showEdition: true)
                 .tag(article.id)
                 .contextMenu {
+                    Button("Edit Article…") { editingArticle = article }
+                        .disabled(!article.isPrintable)
                     Button("Open Original") { NSWorkspace.shared.open(article.sourceURL) }
                     Button("Fix in Galley Browser…") {
                         openWindow(id: "browser", value: BrowserRequest(url: article.sourceURL, articleID: article.id))
@@ -226,6 +241,7 @@ struct ArticleListView: View {
                                        systemImage: title == "Needs Attention" ? "checkmark.circle" : "doc.text")
             }
         }
+        .sheet(item: $editingArticle) { ArticleEditor(article: $0) }
         .navigationTitle(title)
     }
 }

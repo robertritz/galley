@@ -69,6 +69,12 @@ public struct ArticleMetadata: Codable, Sendable, Equatable {
     public var leadImageFile: String?
     /// True when the HTML already contains images, so the opener doesn't need the lead image.
     public var bodyHasImages: Bool
+    /// True when the lead image is mostly text (a promo graphic or screenshot), so it
+    /// shouldn't be used as a photo. Nil until checked; older articles are checked lazily.
+    public var leadImageIsTextHeavy: Bool?
+
+    /// The lead image, if it's a real picture rather than a graphic full of text.
+    public var leadPhotoFile: String? { leadImageIsTextHeavy == true ? nil : leadImageFile }
     public var extractedAt: Date
 
     public var readingMinutes: Int { max(1, Int((Double(wordCount) / 230).rounded())) }
@@ -151,13 +157,13 @@ public struct EditionDocument: Sendable {
     /// The article the cover leads with: the chosen one, or the first with a photo.
     public var coverArticle: RenderArticle? {
         articles.first { $0.id == coverArticleID }
-            ?? articles.first { $0.metadata.leadImageFile != nil }
+            ?? articles.first { $0.metadata.leadPhotoFile != nil }
             ?? articles.first
     }
 
     /// True when no article can supply a cover photo and none was chosen.
     public var needsCoverPhoto: Bool {
-        coverPhoto == nil && !articles.contains { $0.metadata.leadImageFile != nil }
+        coverPhoto == nil && !articles.contains { $0.metadata.leadPhotoFile != nil }
     }
 }
 

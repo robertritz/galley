@@ -6,3 +6,4 @@ DerivedData/
 .swiftpm/
 build/
 *.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/
+dist/

@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		03202F2632B59162FDFF4AEF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 71E383E7FE4CCED24FEEF008 /* Assets.xcassets */; };
 		05DF811E96A68994E4850B17 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC5BC5906CF1DC9E1821BDE4 /* SettingsView.swift */; };
+		0EAA426E3A06D1E7DD0502B0 /* GalleyShare.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 5F798F773927AB5B7C90E082 /* GalleyShare.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		2205C7EBF3B482D724701C77 /* EditionPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F219DAC1FDCFD0FFCEB1E00 /* EditionPreview.swift */; };
 		270B01F0303C7258233E2B6C /* EditionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE11FF36FF800E63330C657F /* EditionView.swift */; };
 		285CEEE2548AD5124090447A /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BB361E53F1F50E0E0875093 /* ContentView.swift */; };
@@ -17,19 +18,50 @@
 		965A03AA349410410FF0499C /* GalleyApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBBB059BE053A6FD4308C65C /* GalleyApp.swift */; };
 		971C2F10F1AD2D70F75DCE54 /* AddLinkSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE866825882E66037571895D /* AddLinkSheet.swift */; };
 		A89AFB384F919A2939D57422 /* BrowserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D838875122AEC7A4A744C01 /* BrowserView.swift */; };
+		C4CDBE6CBE75CD2024692AD0 /* ArticleEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F69D5C53855665E28A2E9FE8 /* ArticleEditor.swift */; };
 		D0557C12C0ACF442BF697DFB /* GalleyCore in Frameworks */ = {isa = PBXBuildFile; productRef = 6E759FDDA4FE50491D88350D /* GalleyCore */; };
+		D60E67056FE8A12FD5D81745 /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D8FDC9B970401404F3FB99 /* ShareViewController.swift */; };
 		E708C4903AD528B18709F803 /* Article.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B919FAEDD0466659E30D195 /* Article.swift */; };
 		EAC424B973E434905FA98626 /* Edition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05EEA1FB66D04352200CAFC8 /* Edition.swift */; };
 		FF6DEB18079C32CA8A542FA2 /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B953688FD4723DFB9AADEE1 /* Preferences.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		A40567380C11624E122712A6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C3D80CF56B1C83BA21A8C2F4 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2DEB4496220EE6E6E9A49A67;
+			remoteInfo = GalleyShare;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		453AB049ABA65482D48E6B8F /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				0EAA426E3A06D1E7DD0502B0 /* GalleyShare.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		05EEA1FB66D04352200CAFC8 /* Edition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Edition.swift; sourceTree = "<group>"; };
 		147D5A604D5978895C17C42E /* Galley.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Galley.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		22378DF04024B6EB7AEA9F99 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		3BB361E53F1F50E0E0875093 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		5D838875122AEC7A4A744C01 /* BrowserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserView.swift; sourceTree = "<group>"; };
+		5F798F773927AB5B7C90E082 /* GalleyShare.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = GalleyShare.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		66D8FDC9B970401404F3FB99 /* ShareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareViewController.swift; sourceTree = "<group>"; };
 		71E383E7FE4CCED24FEEF008 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		72CF3E256401E0CD41B89925 /* Library.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Library.swift; sourceTree = "<group>"; };
+		7BBCD59F0CCEE646D31F85F3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		7CBEE847FD08E67AF5B575E8 /* GalleyShare.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = GalleyShare.entitlements; sourceTree = "<group>"; };
 		7F219DAC1FDCFD0FFCEB1E00 /* EditionPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditionPreview.swift; sourceTree = "<group>"; };
 		85DF6EC882D068E7CAD09D78 /* GalleyCore */ = {isa = PBXFileReference; lastKnownFileType = folder; name = GalleyCore; path = GalleyCore; sourceTree = SOURCE_ROOT; };
 		8B953688FD4723DFB9AADEE1 /* Preferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Preferences.swift; sourceTree = "<group>"; };
@@ -39,6 +71,7 @@
 		DBBB059BE053A6FD4308C65C /* GalleyApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleyApp.swift; sourceTree = "<group>"; };
 		DC5BC5906CF1DC9E1821BDE4 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		EE11FF36FF800E63330C657F /* EditionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditionView.swift; sourceTree = "<group>"; };
+		F69D5C53855665E28A2E9FE8 /* ArticleEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArticleEditor.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -53,10 +86,21 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1118D4BBA39556CB9D084E6C /* GalleyShare */ = {
+			isa = PBXGroup;
+			children = (
+				7CBEE847FD08E67AF5B575E8 /* GalleyShare.entitlements */,
+				7BBCD59F0CCEE646D31F85F3 /* Info.plist */,
+				66D8FDC9B970401404F3FB99 /* ShareViewController.swift */,
+			);
+			path = GalleyShare;
+			sourceTree = "<group>";
+		};
 		118B53B6FA50CA073A226E20 = {
 			isa = PBXGroup;
 			children = (
 				C4859B1C0A7FE357D258EA5A /* Galley */,
+				1118D4BBA39556CB9D084E6C /* GalleyShare */,
 				F6831A4B096AE4DAA5A6BC0A /* Packages */,
 				5AE09D2FD1B3646AED9A6FCF /* Products */,
 			);
@@ -66,6 +110,7 @@
 			isa = PBXGroup;
 			children = (
 				147D5A604D5978895C17C42E /* Galley.app */,
+				5F798F773927AB5B7C90E082 /* GalleyShare.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -83,6 +128,7 @@
 			isa = PBXGroup;
 			children = (
 				CE866825882E66037571895D /* AddLinkSheet.swift */,
+				F69D5C53855665E28A2E9FE8 /* ArticleEditor.swift */,
 				5D838875122AEC7A4A744C01 /* BrowserView.swift */,
 				3BB361E53F1F50E0E0875093 /* ContentView.swift */,
 				7F219DAC1FDCFD0FFCEB1E00 /* EditionPreview.swift */,
@@ -98,6 +144,7 @@
 			children = (
 				71E383E7FE4CCED24FEEF008 /* Assets.xcassets */,
 				DBBB059BE053A6FD4308C65C /* GalleyApp.swift */,
+				22378DF04024B6EB7AEA9F99 /* Info.plist */,
 				72CF3E256401E0CD41B89925 /* Library.swift */,
 				8B953688FD4723DFB9AADEE1 /* Preferences.swift */,
 				99071593C5FACE337EEE179A /* Model */,
@@ -117,6 +164,23 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		2DEB4496220EE6E6E9A49A67 /* GalleyShare */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 826ECDCE0C2A7747D63AE0D4 /* Build configuration list for PBXNativeTarget "GalleyShare" */;
+			buildPhases = (
+				2316CA71736FCFBB9F135BFA /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = GalleyShare;
+			packageProductDependencies = (
+			);
+			productName = GalleyShare;
+			productReference = 5F798F773927AB5B7C90E082 /* GalleyShare.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		C12FFAD813ABFA3515B2F32D /* Galley */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = B517535259E4D2D675817A32 /* Build configuration list for PBXNativeTarget "Galley" */;
@@ -124,10 +188,12 @@
 				B97FBF40FF0EAE34F205D4AA /* Sources */,
 				587098016ABCF8952FE6DEBD /* Resources */,
 				3EE2C30F5BAA19C9025E6EDA /* Frameworks */,
+				453AB049ABA65482D48E6B8F /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				0DFE097E7C41BBD5837CA324 /* PBXTargetDependency */,
 			);
 			name = Galley;
 			packageProductDependencies = (
@@ -146,7 +212,12 @@
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
+					2DEB4496220EE6E6E9A49A67 = {
+						DevelopmentTeam = J5NT99LSV6;
+						ProvisioningStyle = Automatic;
+					};
 					C12FFAD813ABFA3515B2F32D = {
+						DevelopmentTeam = J5NT99LSV6;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -169,6 +240,7 @@
 			projectRoot = "";
 			targets = (
 				C12FFAD813ABFA3515B2F32D /* Galley */,
+				2DEB4496220EE6E6E9A49A67 /* GalleyShare */,
 			);
 		};
 /* End PBXProject section */
@@ -185,12 +257,21 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		2316CA71736FCFBB9F135BFA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D60E67056FE8A12FD5D81745 /* ShareViewController.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		B97FBF40FF0EAE34F205D4AA /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				971C2F10F1AD2D70F75DCE54 /* AddLinkSheet.swift in Sources */,
 				E708C4903AD528B18709F803 /* Article.swift in Sources */,
+				C4CDBE6CBE75CD2024692AD0 /* ArticleEditor.swift in Sources */,
 				A89AFB384F919A2939D57422 /* BrowserView.swift in Sources */,
 				285CEEE2548AD5124090447A /* ContentView.swift in Sources */,
 				EAC424B973E434905FA98626 /* Edition.swift in Sources */,
@@ -206,24 +287,44 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		0DFE097E7C41BBD5837CA324 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2DEB4496220EE6E6E9A49A67 /* GalleyShare */;
+			targetProxy = A40567380C11624E122712A6 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		22E4F47D30A41A3FFC8AE6D0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = GalleyShare/GalleyShare.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = GalleyShare/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "$(GALLEY_BUNDLE_ID).share";
+				PRODUCT_NAME = GalleyShare;
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
 		26D7C6F4E77BD75035A9F6A8 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "-";
-				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				ENABLE_HARDENED_RUNTIME = NO;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = Galley;
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.news";
-				INFOPLIST_KEY_NSHumanReadableCopyright = "Galley is open source under the MIT licence.";
+				INFOPLIST_FILE = Galley/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.robertritz.galley;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(GALLEY_BUNDLE_ID)";
 				PRODUCT_NAME = Galley;
 				SDKROOT = macosx;
 			};
@@ -233,19 +334,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "-";
-				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				ENABLE_HARDENED_RUNTIME = NO;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = Galley;
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.news";
-				INFOPLIST_KEY_NSHumanReadableCopyright = "Galley is open source under the MIT licence.";
+				INFOPLIST_FILE = Galley/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.robertritz.galley;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(GALLEY_BUNDLE_ID)";
 				PRODUCT_NAME = Galley;
 				SDKROOT = macosx;
 			};
@@ -284,13 +379,18 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = J5NT99LSV6;
+				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GALLEY_BUNDLE_ID = com.robertritz.galley;
+				GALLEY_URL_SCHEME = galley;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -306,7 +406,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 15.0;
-				MARKETING_VERSION = 0.1.0;
+				MARKETING_VERSION = 0.2.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -353,13 +453,18 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = J5NT99LSV6;
+				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GALLEY_BUNDLE_ID = com.robertritz.galley;
+				GALLEY_URL_SCHEME = galley;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -369,7 +474,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 15.0;
-				MARKETING_VERSION = 0.1.0;
+				MARKETING_VERSION = 0.2.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -382,9 +487,36 @@
 			};
 			name = Release;
 		};
+		ECAA9CE467CE6039493FD143 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = GalleyShare/GalleyShare.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = GalleyShare/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "$(GALLEY_BUNDLE_ID).share";
+				PRODUCT_NAME = GalleyShare;
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		826ECDCE0C2A7747D63AE0D4 /* Build configuration list for PBXNativeTarget "GalleyShare" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				22E4F47D30A41A3FFC8AE6D0 /* Debug */,
+				ECAA9CE467CE6039493FD143 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
 		9C8CF71A8E7486BA0E927D57 /* Build configuration list for PBXProject "Galley" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

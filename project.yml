@@ -9,13 +9,20 @@ packages:
     path: GalleyCore
 settings:
   base:
-    MARKETING_VERSION: 0.1.0
-    CURRENT_PROJECT_VERSION: 1
+    MARKETING_VERSION: 0.2.0
+    CURRENT_PROJECT_VERSION: 2
     SWIFT_VERSION: 6.0
     SWIFT_DEFAULT_ACTOR_ISOLATION: MainActor
     SWIFT_APPROACHABLE_CONCURRENCY: YES
     ENABLE_USER_SCRIPT_SANDBOXING: YES
     DEAD_CODE_STRIPPING: YES
+    DEVELOPMENT_TEAM: J5NT99LSV6
+    CODE_SIGN_STYLE: Automatic
+    ENABLE_HARDENED_RUNTIME: YES
+    # The app ID. Test builds override it (GALLEY_BUNDLE_ID=com.robertritz.galley.dev)
+    # so they can run next to the real app; the extension's ID follows it.
+    GALLEY_BUNDLE_ID: com.robertritz.galley
+    GALLEY_URL_SCHEME: galley
 targets:
   Galley:
     type: application
@@ -25,16 +32,52 @@ targets:
     dependencies:
       - package: GalleyCore
         product: GalleyCore
+      - target: GalleyShare
+    info:
+      path: Galley/Info.plist
+      properties:
+        CFBundleDisplayName: Galley
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        LSApplicationCategoryType: public.app-category.news
+        NSHumanReadableCopyright: Galley is open source under the MIT licence.
+        GalleyURLScheme: $(GALLEY_URL_SCHEME)
+        CFBundleURLTypes:
+          - CFBundleURLName: $(PRODUCT_BUNDLE_IDENTIFIER)
+            CFBundleURLSchemes: [$(GALLEY_URL_SCHEME)]
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.robertritz.galley
+        PRODUCT_BUNDLE_IDENTIFIER: $(GALLEY_BUNDLE_ID)
         PRODUCT_NAME: Galley
-        GENERATE_INFOPLIST_FILE: YES
-        INFOPLIST_KEY_CFBundleDisplayName: Galley
-        INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.news
-        INFOPLIST_KEY_NSHumanReadableCopyright: "Galley is open source under the MIT licence."
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
-        CODE_SIGN_STYLE: Automatic
-        CODE_SIGN_IDENTITY: "-"
-        ENABLE_HARDENED_RUNTIME: NO
         COMBINE_HIDPI_IMAGES: YES
+
+  GalleyShare:
+    type: app-extension
+    platform: macOS
+    sources:
+      - path: GalleyShare
+    entitlements:
+      path: GalleyShare/GalleyShare.entitlements
+      properties:
+        com.apple.security.app-sandbox: true
+    info:
+      path: GalleyShare/Info.plist
+      properties:
+        CFBundleDisplayName: Galley
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        GalleyURLScheme: $(GALLEY_URL_SCHEME)
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.share-services
+          NSExtensionPrincipalClass: $(PRODUCT_MODULE_NAME).ShareViewController
+          NSExtensionAttributes:
+            NSExtensionActivationRule:
+              NSExtensionActivationSupportsWebURLWithMaxCount: 20
+              NSExtensionActivationSupportsWebPageWithMaxCount: 1
+              NSExtensionActivationSupportsText: true
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: $(GALLEY_BUNDLE_ID).share
+        PRODUCT_NAME: GalleyShare
+        SKIP_INSTALL: YES

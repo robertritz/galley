@@ -41,6 +41,9 @@ struct ContentView: View {
         .dropDestination(for: URL.self) { urls, _ in
             addWeb(urls)
         }
+        .onOpenURL { url in
+            if let edition = library.handle(url) { selection = .edition(edition.id) }
+        }
         .focusedSceneValue(\.galleyActions, actions)
         .onAppear(perform: selectAnEdition)
         .onChange(of: editions.count, selectAnEdition)
