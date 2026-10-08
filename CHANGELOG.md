@@ -3,7 +3,7 @@
 What's new in each version of Galley. The website's changelog is built from this file,
 and `scripts/publish.sh` turns the Unreleased section into the release notes.
 
-## Unreleased
+## 0.3.0 · 8 October 2026
 
 Make the magazine your own.
 
