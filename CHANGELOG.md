@@ -3,7 +3,7 @@
 What's new in each version of Galley. The website's changelog is built from this file,
 and `scripts/publish.sh` turns the Unreleased section into the release notes.
 
-## Unreleased
+## 0.3.1 · 8 October 2026
 
 Galley now keeps itself up to date.
 
