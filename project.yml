@@ -7,6 +7,10 @@ options:
 packages:
   GalleyCore:
     path: GalleyCore
+  # Updates: Galley checks appcast.xml in this repo and installs signed releases.
+  Sparkle:
+    url: https://github.com/sparkle-project/Sparkle
+    majorVersion: 2.0.0
 settings:
   base:
     MARKETING_VERSION: 0.3.0
@@ -32,6 +36,7 @@ targets:
     dependencies:
       - package: GalleyCore
         product: GalleyCore
+      - package: Sparkle
       - target: GalleyShare
     info:
       path: Galley/Info.plist
@@ -42,6 +47,11 @@ targets:
         LSApplicationCategoryType: public.app-category.news
         NSHumanReadableCopyright: Galley is open source under the MIT licence.
         GalleyURLScheme: $(GALLEY_URL_SCHEME)
+        # Sparkle: where to look for new versions, and the key releases are signed with
+        # (the private half is in the release Mac's keychain; see RELEASING.md).
+        SUFeedURL: https://raw.githubusercontent.com/robertritz/galley/main/appcast.xml
+        SUPublicEDKey: YeVRDnIbWSB+A/NwfbrmIyfSXvvufPQBDTfVSTmiOnY=
+        SUEnableAutomaticChecks: true
         CFBundleURLTypes:
           - CFBundleURLName: $(PRODUCT_BUNDLE_IDENTIFIER)
             CFBundleURLSchemes: [$(GALLEY_URL_SCHEME)]

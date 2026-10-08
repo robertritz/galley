@@ -284,7 +284,7 @@
           View on GitHub
         </a>
       </div>
-      <p class="fine"><a href="#changelog">Version {{VERSION}}</a> · macOS 15 or later · Signed &amp; notarized by Apple</p>
+      <p class="fine"><a href="#changelog">Version <span data-version>{{VERSION}}</span></a> · macOS 15 or later · Signed &amp; notarized by Apple</p>
     </div>
     <div class="wrap">
       <div class="desktop">
@@ -455,6 +455,61 @@
     </span>
   </div>
 </footer>
+
+<script>
+// Keep the version line and the changelog current without re-pasting this page:
+// read CHANGELOG.md from GitHub and render it the way site/changelog.pl does (keep
+// the two in step). If anything goes wrong, the copy built into the page stays.
+(async () => {
+  try {
+    const response = await fetch("https://raw.githubusercontent.com/robertritz/galley/main/CHANGELOG.md");
+    if (!response.ok) return;
+    const releases = [];
+    let current = null;
+    for (const line of (await response.text()).split("\n")) {
+      const head = line.match(/^## (.+?)(?: · (.+))?$/);
+      if (head) {
+        current = head[1] === "Unreleased" ? null : { version: head[1], date: head[2] || "", lines: [] };
+        if (current) releases.push(current);
+      } else if (current && /\S/.test(line)) {
+        current.lines.push(line);
+      }
+    }
+    if (!releases.length) return;
+
+    const inline = (s) => s
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      .replace(/`([^`]+)`/g, "<code>$1</code>")
+      .replace(/\*\*([^*]+)\*\*/g, "<b>$1</b>")
+      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
+      .replace(/"([^"]+)"/g, "\u201C$1\u201D")
+      .replace(/'/g, "\u2019");
+    const notes = (release) => {
+      let html = "", inList = false;
+      for (const line of release.lines) {
+        const item = line.match(/^- (.*)/);
+        if (item) {
+          if (!inList) { html += "<ul>"; inList = true; }
+          html += `<li>${inline(item[1])}</li>`;
+        } else {
+          if (inList) { html += "</ul>"; inList = false; }
+          html += `<p>${inline(line)}</p>`;
+        }
+      }
+      return inList ? html + "</ul>" : html;
+    };
+
+    document.querySelector(".releases").innerHTML = releases.map((r) => `
+      <li class="release" id="v${r.version}">
+        <div class="release-head"><h3>${r.version}</h3><time>${r.date}</time></div>
+        <div class="release-notes">${notes(r)}</div>
+      </li>`).join("");
+    document.querySelectorAll("[data-version]").forEach((el) => { el.textContent = releases[0].version; });
+  } catch (error) {
+    // Offline or blocked: keep what's on the page.
+  }
+})();
+</script>
 
 </body>
 </html>

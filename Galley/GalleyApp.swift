@@ -9,6 +9,7 @@ struct GalleyApp: App {
 
     init() {
         Pref.registerDefaults()
+        _ = Updater.shared
         do {
             // Keep the database with the article files, not in a shared default location.
             let root = GalleyPaths.default.root
@@ -54,6 +55,9 @@ struct GalleyCommands: Commands {
     @FocusedValue(\.galleyActions) private var actions
 
     var body: some Commands {
+        CommandGroup(after: .appInfo) {
+            CheckForUpdatesButton()
+        }
         CommandGroup(replacing: .newItem) {
             Button("New Edition…") { actions?.newEdition() }
                 .keyboardShortcut("n", modifiers: .command)

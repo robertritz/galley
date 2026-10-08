@@ -37,5 +37,11 @@
 	<string>public.app-category.news</string>
 	<key>NSHumanReadableCopyright</key>
 	<string>Galley is open source under the MIT licence.</string>
+	<key>SUEnableAutomaticChecks</key>
+	<true/>
+	<key>SUFeedURL</key>
+	<string>https://raw.githubusercontent.com/robertritz/galley/main/appcast.xml</string>
+	<key>SUPublicEDKey</key>
+	<string>YeVRDnIbWSB+A/NwfbrmIyfSXvvufPQBDTfVSTmiOnY=</string>
 </dict>
 </plist>

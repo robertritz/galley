@@ -15,9 +15,11 @@
 		285CEEE2548AD5124090447A /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BB361E53F1F50E0E0875093 /* ContentView.swift */; };
 		2F1D7BB4AAF009EBBD2FC5F2 /* Library.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72CF3E256401E0CD41B89925 /* Library.swift */; };
 		4592C7E42081D3EBFD7713C5 /* SidebarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B605F9B3A6BDBEFAA7721520 /* SidebarView.swift */; };
+		95D5409605FE7D4DD82BD583 /* Updater.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09E9167318D564F2D3511E77 /* Updater.swift */; };
 		965A03AA349410410FF0499C /* GalleyApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBBB059BE053A6FD4308C65C /* GalleyApp.swift */; };
 		971C2F10F1AD2D70F75DCE54 /* AddLinkSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE866825882E66037571895D /* AddLinkSheet.swift */; };
 		A89AFB384F919A2939D57422 /* BrowserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D838875122AEC7A4A744C01 /* BrowserView.swift */; };
+		B15FC82AD0D66BDFC0A45E03 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = D2FCFC18644FE3D3D39C88E8 /* Sparkle */; };
 		C4CDBE6CBE75CD2024692AD0 /* ArticleEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F69D5C53855665E28A2E9FE8 /* ArticleEditor.swift */; };
 		CE764BAC130DC30953CAEB90 /* SetupSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80E101845BE0C6124CCD08F2 /* SetupSheet.swift */; };
 		D0557C12C0ACF442BF697DFB /* GalleyCore in Frameworks */ = {isa = PBXBuildFile; productRef = 6E759FDDA4FE50491D88350D /* GalleyCore */; };
@@ -53,6 +55,7 @@
 
 /* Begin PBXFileReference section */
 		05EEA1FB66D04352200CAFC8 /* Edition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Edition.swift; sourceTree = "<group>"; };
+		09E9167318D564F2D3511E77 /* Updater.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Updater.swift; sourceTree = "<group>"; };
 		147D5A604D5978895C17C42E /* Galley.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Galley.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		22378DF04024B6EB7AEA9F99 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		3BB361E53F1F50E0E0875093 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -82,6 +85,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D0557C12C0ACF442BF697DFB /* GalleyCore in Frameworks */,
+				B15FC82AD0D66BDFC0A45E03 /* Sparkle in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -150,6 +154,7 @@
 				22378DF04024B6EB7AEA9F99 /* Info.plist */,
 				72CF3E256401E0CD41B89925 /* Library.swift */,
 				8B953688FD4723DFB9AADEE1 /* Preferences.swift */,
+				09E9167318D564F2D3511E77 /* Updater.swift */,
 				99071593C5FACE337EEE179A /* Model */,
 				AD3FCD28EA8BA012A580ADF3 /* Views */,
 			);
@@ -201,6 +206,7 @@
 			name = Galley;
 			packageProductDependencies = (
 				6E759FDDA4FE50491D88350D /* GalleyCore */,
+				D2FCFC18644FE3D3D39C88E8 /* Sparkle */,
 			);
 			productName = Galley;
 			productReference = 147D5A604D5978895C17C42E /* Galley.app */;
@@ -235,6 +241,7 @@
 			mainGroup = 118B53B6FA50CA073A226E20;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
+				5DC7F1CBC3A1E16A1A86F401 /* XCRemoteSwiftPackageReference "Sparkle" */,
 				AD01C1414E0B4BF34199937F /* XCLocalSwiftPackageReference "GalleyCore" */,
 			);
 			preferredProjectObjectVersion = 77;
@@ -286,6 +293,7 @@
 				05DF811E96A68994E4850B17 /* SettingsView.swift in Sources */,
 				CE764BAC130DC30953CAEB90 /* SetupSheet.swift in Sources */,
 				4592C7E42081D3EBFD7713C5 /* SidebarView.swift in Sources */,
+				95D5409605FE7D4DD82BD583 /* Updater.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -548,10 +556,26 @@
 		};
 /* End XCLocalSwiftPackageReference section */
 
+/* Begin XCRemoteSwiftPackageReference section */
+		5DC7F1CBC3A1E16A1A86F401 /* XCRemoteSwiftPackageReference "Sparkle" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sparkle-project/Sparkle";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
 /* Begin XCSwiftPackageProductDependency section */
 		6E759FDDA4FE50491D88350D /* GalleyCore */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = GalleyCore;
+		};
+		D2FCFC18644FE3D3D39C88E8 /* Sparkle */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5DC7F1CBC3A1E16A1A86F401 /* XCRemoteSwiftPackageReference "Sparkle" */;
+			productName = Sparkle;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

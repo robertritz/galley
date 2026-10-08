@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">
+  <channel>
+    <title>Galley</title>
+    <link>https://galley.robertritz.com</link>
+    <description>New versions of Galley. The app checks this file for updates.</description>
+    <language>en</language>
+    <!-- Releases, newest first. scripts/publish.sh adds each one (scripts/appcast.sh). -->  </channel>
+    <item>
+      <title>Galley 0.3.0</title>
+      <pubDate>Thu, 08 Oct 2026 11:09:38 +0000</pubDate>
+      <sparkle:version>4</sparkle:version>
+      <sparkle:shortVersionString>0.3.0</sparkle:shortVersionString>
+      <sparkle:minimumSystemVersion>15.0</sparkle:minimumSystemVersion>
+      <description sparkle:format="markdown"><![CDATA[
+Make the magazine your own.
+
+- A short setup on first launch: name your magazine and, if you like, put your name on the cover.
+- Your name prints under the masthead, like a subscriber's copy, in place of the story count. Change it or clear it in Settings → General.
+- Longer magazine names are set smaller so they stay on one line.
+      ]]></description>
+      <enclosure url="https://github.com/robertritz/galley/releases/download/v0.3.0/Galley-0.3.0.dmg" type="application/octet-stream" sparkle:edSignature="9ft6NknkaNsM2ShTWU6D26W8GrJrO6biTqECa2+ys1aBfZlvse4tRU/QoLUonypz0h5ozSmEDN3NKmgJiPZkCw==" length="3050039"/>
+    </item>
+</rss>

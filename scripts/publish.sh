@@ -1,5 +1,6 @@
 #!/bin/bash
-# Bumps the version, builds a notarised DMG and publishes it as a GitHub release.
+# Bumps the version, builds a notarised DMG, publishes it as a GitHub release and
+# adds it to appcast.xml so installed copies of Galley offer the update.
 #
 #   scripts/publish.sh 0.3.0                 # notes from CHANGELOG.md's Unreleased section
 #   scripts/publish.sh 0.3.0 "What changed in this release"
@@ -51,3 +52,11 @@ if [[ -f "$NOTES" ]]; then NOTES_ARGS=(--notes-file "$NOTES"); else NOTES_ARGS=(
 # (the website's download button) always gets the newest version.
 cp "dist/Galley-$VERSION.dmg" "dist/Galley.dmg"
 gh release create "v$VERSION" "dist/Galley-$VERSION.dmg" "dist/Galley.dmg" --title "Galley $VERSION" "${NOTES_ARGS[@]}"
+
+# Tell installed copies about it: Sparkle reads appcast.xml from main. This goes
+# out only now that the DMG it points to is downloadable.
+scripts/appcast.sh "$VERSION" "$BUILD" "dist/Galley-$VERSION.dmg"
+git add appcast.xml
+git commit -q -m "Appcast: Galley $VERSION"
+git push -q origin HEAD
+echo "==> Published Galley $VERSION; installed copies will offer the update."

@@ -3,6 +3,9 @@
 # fills {{CHANGELOG}} and {{VERSION}} (the newest release) in the page on stdin.
 #
 #   perl changelog.pl ../CHANGELOG.md < index.html
+#
+# The page re-renders the changelog in the browser the same way (see the script
+# at the end of index.html); keep the two in step.
 use strict;
 use utf8;
 use warnings;

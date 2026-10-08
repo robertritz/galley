@@ -3,6 +3,14 @@
 What's new in each version of Galley. The website's changelog is built from this file,
 and `scripts/publish.sh` turns the Unreleased section into the release notes.
 
+## Unreleased
+
+Galley now keeps itself up to date.
+
+- Galley checks for new versions once a day and offers to install them, with notes on what's new. Updates are signed, so Galley only installs genuine releases.
+- Galley → Check for Updates… looks right away, and Settings → General has options to check automatically or to download and install updates on their own.
+- If you're on 0.3.0 or earlier, download this version from the website once; after that, updates arrive in the app.
+
 ## 0.3.0 · 8 October 2026
 
 Make the magazine your own.

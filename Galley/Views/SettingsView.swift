@@ -1,4 +1,5 @@
 import GalleyCore
+import Sparkle
 import SwiftUI
 import WebKit
 
@@ -30,6 +31,30 @@ private struct GeneralSettings: View {
                 .font(.caption)
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
+
+            UpdateSettings()
+        }
+    }
+}
+
+/// Sparkle keeps these in its own defaults, so they're mirrored into state here.
+private struct UpdateSettings: View {
+    private let updater = Updater.shared.updater
+    @State private var checks = true
+    @State private var installs = false
+
+    var body: some View {
+        Group {
+            Toggle("Check for updates automatically", isOn: $checks)
+                .onChange(of: checks) { updater.automaticallyChecksForUpdates = checks }
+                .padding(.top, 8)
+            Toggle("Download and install updates automatically", isOn: $installs)
+                .onChange(of: installs) { updater.automaticallyDownloadsUpdates = installs }
+                .disabled(!checks)
+        }
+        .onAppear {
+            checks = updater.automaticallyChecksForUpdates
+            installs = updater.automaticallyDownloadsUpdates
         }
     }
 }
