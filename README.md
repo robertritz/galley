@@ -35,6 +35,8 @@ wherever you live.
 - **Always a cover.** The cover uses the lead story's photo. If no story has one, Galley
   finds an openly licensed photo on [Openverse](https://openverse.org) to match the edition's
   name and prints the credit. You can also choose your own. Offline, it sets a text-only cover.
+- **Your magazine, your name.** Name the magazine whatever you like, and put your own name
+  on the cover. Galley asks on first launch; change either in Settings.
 - **Home printing.** A4 or US Letter, one-sided, with margins a home printer can handle.
   Colour, greyscale or text-only images.
 - **Latin and Cyrillic.** The bundled fonts (Source Serif 4 and Inter) cover Mongolian and
@@ -72,7 +74,8 @@ with `--scratch-path` somewhere outside it; iCloud's file attributes break code 
 
 ## Releasing
 
-See [RELEASING.md](RELEASING.md). `scripts/release.sh` builds a signed, notarised DMG.
+What changed in each version is in [CHANGELOG.md](CHANGELOG.md). See
+[RELEASING.md](RELEASING.md) for how to publish one. `scripts/release.sh` builds a signed, notarised DMG.
 
 ## How it works
 

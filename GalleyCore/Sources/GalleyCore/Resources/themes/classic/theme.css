@@ -513,7 +513,8 @@ img.qr {
 
 /* ---------- Edition name and photo credit on the cover ---------- */
 
-.issue-line .issue-title {
+.issue-line .issue-title,
+.issue-line .issue-reader {
   font-family: var(--serif);
   font-style: italic;
   font-weight: 500;

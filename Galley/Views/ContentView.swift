@@ -21,6 +21,7 @@ struct ContentView: View {
     @State private var showingAddLink = false
     /// The edition whose name is being edited in the sidebar.
     @State private var renamingID: UUID?
+    @AppStorage(Pref.didSetUp) private var didSetUp = false
 
     var body: some View {
         NavigationSplitView {
@@ -34,6 +35,9 @@ struct ContentView: View {
         }
         .sheet(isPresented: $showingAddLink) {
             AddLinkSheet(target: selectedEdition) { edition in selection = .edition(edition.id) }
+        }
+        .sheet(isPresented: Binding(get: { !didSetUp }, set: { if !$0 { didSetUp = true } })) {
+            SetupSheet()
         }
         .onPasteCommand(of: [.url, .plainText]) { providers in
             Task { await addLinks(from: providers) }

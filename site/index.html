@@ -109,6 +109,8 @@
   .lede { font: 400 clamp(18px, 2.3vw, 21px)/1.55 var(--serif); color: var(--ink-2); max-width: 36em; margin: 0 auto 32px; }
   .cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
   .fine { margin-top: 16px; font-size: 13.5px; color: var(--muted); }
+  .fine a { text-underline-offset: 3px; text-decoration-color: var(--rule); }
+  .fine a:hover { color: var(--ink); }
 
   /* The window, sitting on a soft desktop */
   .desktop {
@@ -217,6 +219,25 @@
   @media (prefers-color-scheme: dark) { .oss { background: #f3efe7; color: #1b1a17; } .oss h2, .stack li b { color: #1b1a17; } .oss p, .stack li { color: #3a3833; } .stack li { border-color: #ddd6c9; } .oss .btn-primary { background: #1b1a17; color: #f3efe7; } .oss .btn-ghost { color: #1b1a17; border-color: #cfc8ba; } }
   @media (max-width: 860px) { .oss { grid-template-columns: 1fr; } }
 
+  /* Changelog */
+  #changelog { padding-bottom: 24px; }
+  .releases { list-style: none; padding: 0; margin: 0 auto; max-width: 820px; }
+  .release { display: grid; grid-template-columns: 170px 1fr; gap: 32px; padding: 30px 0; border-top: 1px solid var(--rule); }
+  .release:last-child { border-bottom: 1px solid var(--rule); }
+  .release-head h3 { font: 700 26px/1.1 var(--serif); letter-spacing: -.01em; margin: 0 0 6px; font-variation-settings: "opsz" 36; }
+  .release-head time { font-size: 14px; color: var(--muted); }
+  .release:first-child .release-head h3::after {
+    content: "Latest"; display: inline-block; vertical-align: middle; margin-left: 10px; padding: 4px 8px 3px;
+    border-radius: 999px; background: color-mix(in srgb, var(--accent) 12%, transparent); color: var(--accent);
+    font: 600 11px/1 var(--sans); letter-spacing: .08em; text-transform: uppercase;
+  }
+  .release-notes p { margin: 0 0 10px; font: 400 18px/1.5 var(--serif); color: var(--ink); }
+  .release-notes ul { margin: 0; padding-left: 1.1em; color: var(--ink-2); font-size: 15.5px; line-height: 1.6; }
+  .release-notes li { margin: 0 0 6px; }
+  .release-notes li::marker { color: var(--muted); }
+  .release-notes code { font: 500 13.5px/1 ui-monospace, "SF Mono", Menlo, monospace; padding: 2px 5px; border-radius: 5px; background: var(--paper-2); }
+  @media (max-width: 720px) { .release { grid-template-columns: 1fr; gap: 12px; padding: 24px 0; } }
+
   /* Closing */
   .closing { text-align: center; padding: 104px 0 96px; }
   .closing img.icon { width: 84px; height: 84px; margin: 0 auto 22px; filter: drop-shadow(0 10px 18px rgba(30,20,0,.2)); }
@@ -239,6 +260,7 @@
       <a href="#how">How it works</a>
       <a href="#pages">Pages</a>
       <a href="#features">Features</a>
+      <a href="#changelog">Changelog</a>
       <a href="https://github.com/robertritz/galley">GitHub</a>
     </nav>
     <a class="btn btn-primary" href="https://github.com/robertritz/galley/releases/latest/download/Galley.dmg">Download</a>
@@ -262,7 +284,7 @@
           View on GitHub
         </a>
       </div>
-      <p class="fine">Version 0.2.1 · macOS 15 or later · Signed &amp; notarized by Apple</p>
+      <p class="fine"><a href="#changelog">Version {{VERSION}}</a> · macOS 15 or later · Signed &amp; notarized by Apple</p>
     </div>
     <div class="wrap">
       <div class="desktop">
@@ -387,7 +409,7 @@
           <p>Galley is MIT-licensed and built in the open. Read the code, report a bug, or design a theme of your own — themes are plain CSS.</p>
           <div class="cta" style="justify-content: flex-start;">
             <a class="btn btn-primary" href="https://github.com/robertritz/galley">Star on GitHub</a>
-            <a class="btn btn-ghost" href="https://github.com/robertritz/galley/releases">Release notes</a>
+            <a class="btn btn-ghost" href="#changelog">Release notes</a>
           </div>
         </div>
         <ul class="stack">
@@ -398,6 +420,17 @@
           <li><b>Covers</b>Openverse, on-device Vision</li>
         </ul>
       </div>
+    </div>
+  </section>
+
+  <section id="changelog">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="kicker">Changelog</div>
+        <h2>What’s new</h2>
+        <p>Every version of Galley, newest first.</p>
+      </div>
+      {{CHANGELOG}}
     </div>
   </section>
 
@@ -415,6 +448,7 @@
   <div class="wrap">
     <span>Galley · made by <a href="https://robertritz.com">Robert Ritz</a></span>
     <span class="links">
+      <a href="#changelog">Changelog</a>
       <a href="https://github.com/robertritz/galley">GitHub</a>
       <a href="https://github.com/robertritz/galley/releases">Releases</a>
       <a href="https://github.com/robertritz/galley/blob/main/LICENSE">MIT License</a>

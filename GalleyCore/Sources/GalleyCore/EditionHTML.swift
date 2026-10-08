@@ -94,11 +94,15 @@ struct EditionHTML {
             "<span>No. \(edition.number)</span>",
             edition.title.flatMap { $0.isEmpty ? nil : "<span class=\"issue-title\">\(esc($0))</span>" },
             "<span>\(esc(edition.dateLabel))</span>",
-            "<span>\(count) \(count == 1 ? "story" : "stories")</span>",
+            edition.readerName.flatMap { $0.isEmpty ? nil : "<span class=\"issue-reader\">\(esc($0))</span>" }
+                ?? "<span>\(count) \(count == 1 ? "story" : "stories")</span>",
         ].compactMap { $0 }.joined()
+        // Longer magazine names get smaller so they stay on one line (a set character
+        // averages about 0.135mm per point, and the measure is at least 170mm).
+        let mastheadSize = min(84, 1100 / max(edition.masthead.count, 1))
         let masthead = """
           <header class="cover-masthead">
-            <h1 class="masthead">\(esc(edition.masthead))</h1>
+            <h1 class="masthead" style="font-size: \(mastheadSize)pt">\(esc(edition.masthead))</h1>
             <p class="issue-line">\(issueLine)</p>
           </header>
         """

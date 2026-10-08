@@ -19,12 +19,19 @@ does the whole thing; it needs two things set up once.
 
 ## Each release
 
-One command does everything: bumps the version in `project.yml`, builds, signs,
-notarises and staples the DMG, commits, tags, and publishes the GitHub release.
+As you work, note user-facing changes under `## Unreleased` at the top of
+[CHANGELOG.md](CHANGELOG.md): a one-line summary, then `- ` items.
+
+Then one command does everything: bumps the version in `project.yml`, builds, signs,
+notarises and staples the DMG, renames the Unreleased section to the version and
+today's date, commits, tags, and publishes the GitHub release with those notes.
 
 ```bash
-scripts/publish.sh 0.3.0 "What changed in this release"
+scripts/publish.sh 0.3.0
 ```
+
+Pass notes as a second argument (text or a file) to use them for the GitHub release
+instead. Start a new `## Unreleased` section for the next version's changes.
 
 To do it by hand instead: bump `MARKETING_VERSION` and `CURRENT_PROJECT_VERSION` in
 `project.yml`, run `scripts/release.sh` (the DMG lands in `dist/`), then
@@ -38,6 +45,8 @@ handy for checking the build quickly. Other Macs will warn about it.
 [galley.robertritz.com](https://galley.robertritz.com) is a Micro.blog single-page
 website. Its whole page is the theme template `layouts/index.html`, built from
 `site/index.html` with `site/build.sh`; images load from `site/img/` in this repo via
-jsDelivr. The download button points at `releases/latest/download/Galley.dmg`, so new
-releases don't need a site change. If the page text changes (say, the version line),
-rebuild and paste `site/build/index.html` into the template.
+jsDelivr. The build also fills in the version line and the changelog section from the
+released entries in CHANGELOG.md (`site/changelog.pl`). The download button points at
+`releases/latest/download/Galley.dmg`, so it never needs a change, but after each
+release (or any page change) rebuild and paste `site/build/index.html` into the template
+so the version and changelog are current.

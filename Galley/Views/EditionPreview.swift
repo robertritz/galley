@@ -14,6 +14,7 @@ struct EditionPreview: View {
     @AppStorage(Pref.imageMode) private var imageMode = ImageMode.color.rawValue
     @AppStorage(Pref.linkNotes) private var linkNotes = true
     @AppStorage(Pref.masthead) private var masthead = "Galley"
+    @AppStorage(Pref.readerName) private var readerName = ""
     @AppStorage(Pref.columns) private var columns = ColumnLayout.two.rawValue
 
     @State private var document: PDFDocument?

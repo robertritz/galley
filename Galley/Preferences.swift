@@ -6,6 +6,9 @@ enum Pref {
     static let paper = "paper"
     static let columns = "columns"
     static let masthead = "masthead"
+    static let readerName = "readerName"
+    /// Set once the reader has been through the first-launch setup.
+    static let didSetUp = "didSetUp"
     static let imageMode = "imageMode"
     static let linkNotes = "linkNotes"
 
@@ -14,6 +17,8 @@ enum Pref {
             paper: PaperSize.regionDefault.rawValue,
             columns: ColumnLayout.two.rawValue,
             masthead: "Galley",
+            readerName: "",
+            didSetUp: false,
             imageMode: ImageMode.color.rawValue,
             linkNotes: true,
         ])
@@ -32,11 +37,17 @@ enum Pref {
     /// Changes whenever a setting that affects the layout changes.
     static var renderKey: String {
         let r = renderSettings
-        return [r.paper.rawValue, "\(r.columns.rawValue)", r.imageMode.rawValue, "\(r.linkNotes)", mastheadName].joined(separator: "|")
+        return [r.paper.rawValue, "\(r.columns.rawValue)", r.imageMode.rawValue, "\(r.linkNotes)", mastheadName, readerNameValue ?? ""].joined(separator: "|")
     }
 
     static var mastheadName: String {
         let name = UserDefaults.standard.string(forKey: masthead)?.trimmingCharacters(in: .whitespaces) ?? ""
         return name.isEmpty ? "Galley" : name
+    }
+
+    /// The reader's name for the cover, or nil to print the story count instead.
+    static var readerNameValue: String? {
+        let name = UserDefaults.standard.string(forKey: readerName)?.trimmingCharacters(in: .whitespaces) ?? ""
+        return name.isEmpty ? nil : name
     }
 }

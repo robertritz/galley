@@ -132,6 +132,8 @@ public struct EditionDocument: Sendable {
     public var number: Int
     /// Optional edition name, e.g. "Climate" or "Weekend Reading".
     public var title: String?
+    /// The reader's name, printed on the cover in place of the story count.
+    public var readerName: String?
     public var dateLabel: String
     public var articles: [RenderArticle]
     public var coverArticleID: UUID?
@@ -141,11 +143,12 @@ public struct EditionDocument: Sendable {
     public var coverPhotoCredit: String?
     public var settings: RenderSettings
 
-    public init(masthead: String, number: Int, title: String? = nil, dateLabel: String, articles: [RenderArticle],
+    public init(masthead: String, number: Int, title: String? = nil, readerName: String? = nil, dateLabel: String, articles: [RenderArticle],
                 coverArticleID: UUID? = nil, coverPhoto: URL? = nil, coverPhotoCredit: String? = nil, settings: RenderSettings) {
         self.masthead = masthead
         self.number = number
         self.title = title
+        self.readerName = readerName
         self.dateLabel = dateLabel
         self.articles = articles
         self.coverArticleID = coverArticleID

@@ -4,7 +4,7 @@ import GalleyCore
 // A small command-line front end to GalleyCore, used for development and testing.
 //
 //     galley-cli <url> [<url> …] [--paper a4|letter] [--columns 1|2] [--images color|grayscale|none]
-//                [--title "Edition name"] [--out edition.pdf]
+//                [--title "Edition name"] [--masthead "Magazine name"] [--reader "Your name"] [--out edition.pdf]
 //
 // Files go to $GALLEY_ROOT (default: ~/Library/Application Support/Galley).
 
@@ -15,6 +15,8 @@ func run() async -> Int32 {
     var imageMode = ImageMode.color
     var columns = ColumnLayout.two
     var title: String?
+    var masthead = "Galley"
+    var reader: String?
     var out: URL?
     var args = CommandLine.arguments.dropFirst()
     while let arg = args.popFirst() {
@@ -23,6 +25,8 @@ func run() async -> Int32 {
         case "--images": imageMode = args.popFirst().flatMap(ImageMode.init(rawValue:)) ?? imageMode
         case "--columns": columns = args.popFirst().flatMap(Int.init).flatMap(ColumnLayout.init(rawValue:)) ?? columns
         case "--title": title = args.popFirst()
+        case "--masthead": masthead = args.popFirst() ?? masthead
+        case "--reader": reader = args.popFirst()
         case "--out": out = args.popFirst().map { URL(fileURLWithPath: $0) }
         default:
             if let url = URL(string: arg), url.scheme?.hasPrefix("http") == true { urls.append(url) }
@@ -30,7 +34,7 @@ func run() async -> Int32 {
         }
     }
     guard !urls.isEmpty else {
-        print("usage: galley-cli <url> [<url> …] [--paper a4|letter] [--columns 1|2] [--images color|grayscale|none] [--title name] [--out edition.pdf]")
+        print("usage: galley-cli <url> [<url> …] [--paper a4|letter] [--columns 1|2] [--images color|grayscale|none] [--title name] [--masthead name] [--reader name] [--out edition.pdf]")
         return 64
     }
 
@@ -60,9 +64,10 @@ func run() async -> Int32 {
 
     let editionID = UUID()
     var document = EditionDocument(
-        masthead: "Galley",
+        masthead: masthead,
         number: 1,
         title: title,
+        readerName: reader,
         dateLabel: Date().formatted(date: .long, time: .omitted),
         articles: articles,
         settings: RenderSettings(paper: paper, columns: columns, imageMode: imageMode)

@@ -382,6 +382,7 @@ final class Library {
             masthead: Pref.mastheadName,
             number: edition.number,
             title: edition.name.isEmpty ? nil : edition.name,
+            readerName: Pref.readerNameValue,
             dateLabel: edition.dateLabel,
             articles: renderArticles,
             coverArticleID: edition.coverArticleID,

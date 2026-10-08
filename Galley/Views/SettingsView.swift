@@ -16,6 +16,7 @@ struct SettingsView: View {
 
 private struct GeneralSettings: View {
     @AppStorage(Pref.masthead) private var masthead = "Galley"
+    @AppStorage(Pref.readerName) private var readerName = ""
 
     var body: some View {
         Form {
@@ -23,6 +24,12 @@ private struct GeneralSettings: View {
             Text("Printed as the masthead on the cover of every edition.")
                 .font(.caption)
                 .foregroundStyle(.secondary)
+
+            TextField("Your name:", text: $readerName, prompt: Text("Optional"))
+            Text("Printed under the masthead, like the name on a subscriber's copy. Leave it empty to show the number of stories instead.")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
         }
     }
 }
