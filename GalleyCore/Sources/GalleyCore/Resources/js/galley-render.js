@@ -210,6 +210,10 @@ function balanceLastSheets() {
       return el.getBoundingClientRect().height + parseFloat(cs.marginTop) + parseFloat(cs.marginBottom);
     };
     const total = all.reduce((sum, el) => sum + outer(el), 0);
+    // The source footer must stay whole, so the columns are never shorter than it.
+    // (A multi-column box splits a block that's taller than a column even with
+    // break-inside: avoid, which cut the QR code in half across the two columns.)
+    const footer = Math.max(0, ...all.filter((el) => el.matches("footer.source")).map(outer));
 
     // Remember where everything was, in case balancing doesn't fit.
     const homes = all.map((el) => ({ el, parent: el.parentNode, next: el.nextSibling }));
@@ -230,7 +234,7 @@ function balanceLastSheets() {
     // Start at half the text height and grow until it all fits in two columns
     // (unbreakable blocks such as pictures or the QR code need a little slack).
     const available = area.getBoundingClientRect().bottom - balanced.getBoundingClientRect().top;
-    let height = Math.ceil(total / 2);
+    let height = Math.ceil(Math.max(total / 2, footer));
     let fits = false;
     while (height <= available) {
       balanced.style.height = `${height}px`;

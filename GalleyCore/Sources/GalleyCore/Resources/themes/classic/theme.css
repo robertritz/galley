@@ -474,6 +474,10 @@ sup.note-ref {
   break-inside: avoid;
 }
 
+/* Paged.js drops the top padding of a block continued from the previous page,
+   which would put the QR code right against (and over) the rule. */
+.source[data-split-from] { padding-top: 3mm !important; }
+
 .notes-heading {
   font-weight: 700;
   color: var(--ink);

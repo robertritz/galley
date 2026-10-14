@@ -3,6 +3,12 @@
 What's new in each version of Galley. The website's changelog is built from this file,
 and `scripts/publish.sh` turns the Unreleased section into the release notes.
 
+## Unreleased
+
+A layout fix for article endings.
+
+- When an article's last page held only its "Read the original at" box, the box could be split across both columns, cutting the QR code in half. It now stays whole in one column, with the rule above it no longer hidden behind the QR code.
+
 ## 0.3.1 · 8 October 2026
 
 Galley now keeps itself up to date.
