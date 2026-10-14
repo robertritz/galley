@@ -7,6 +7,19 @@
     <language>en</language>
     <!-- Releases, newest first. scripts/publish.sh adds each one (scripts/appcast.sh). -->  </channel>
     <item>
+      <title>Galley 0.3.2</title>
+      <pubDate>Wed, 14 Oct 2026 13:07:40 +0000</pubDate>
+      <sparkle:version>6</sparkle:version>
+      <sparkle:shortVersionString>0.3.2</sparkle:shortVersionString>
+      <sparkle:minimumSystemVersion>15.0</sparkle:minimumSystemVersion>
+      <description sparkle:format="markdown"><![CDATA[
+A layout fix for article endings.
+
+- When an article's last page held only its "Read the original at" box, the box could be split across both columns, cutting the QR code in half. It now stays whole in one column, with the rule above it no longer hidden behind the QR code.
+      ]]></description>
+      <enclosure url="https://github.com/robertritz/galley/releases/download/v0.3.2/Galley-0.3.2.dmg" type="application/octet-stream" sparkle:edSignature="1JYhF+NHd8eJpe/qy8KP1nwSm+1ozPhHPUaF2iuv5cz09Og86rHKZcARBHWHDEFyDXeKpzlMk8LajYv9jmtICA==" length="4086452"/>
+    </item>
+    <item>
       <title>Galley 0.3.1</title>
       <pubDate>Thu, 08 Oct 2026 11:23:37 +0000</pubDate>
       <sparkle:version>5</sparkle:version>
