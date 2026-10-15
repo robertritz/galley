@@ -44,4 +44,7 @@ $NOTES
     </item>
 "
 perl -0pi -e 's/(<!-- Releases, newest first[^\n]*\n)/$1$ENV{ITEM}/' appcast.xml
+# Sparkle only sees releases inside <channel>; refuse to publish a feed where it wouldn't.
+[[ "$(xmllint --xpath 'string(/rss/channel/item[1]/*[local-name()="shortVersionString"])' appcast.xml)" == "$VERSION" ]] ||
+  { echo "appcast.xml: Galley $VERSION isn't the first item in <channel>; check the file."; exit 1; }
 echo "==> appcast.xml: Galley $VERSION (build $BUILD)"

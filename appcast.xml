@@ -5,7 +5,7 @@
     <link>https://galley.robertritz.com</link>
     <description>New versions of Galley. The app checks this file for updates.</description>
     <language>en</language>
-    <!-- Releases, newest first. scripts/publish.sh adds each one (scripts/appcast.sh). -->  </channel>
+    <!-- Releases, newest first. scripts/publish.sh adds each one (scripts/appcast.sh). -->
     <item>
       <title>Galley 0.3.2</title>
       <pubDate>Wed, 14 Oct 2026 13:07:40 +0000</pubDate>
@@ -49,4 +49,5 @@ Make the magazine your own.
       ]]></description>
       <enclosure url="https://github.com/robertritz/galley/releases/download/v0.3.0/Galley-0.3.0.dmg" type="application/octet-stream" sparkle:edSignature="9ft6NknkaNsM2ShTWU6D26W8GrJrO6biTqECa2+ys1aBfZlvse4tRU/QoLUonypz0h5ozSmEDN3NKmgJiPZkCw==" length="3050039"/>
     </item>
+  </channel>
 </rss>
